@@ -21,7 +21,7 @@ CC = gcc
 FLAGS = -Wall -Werror -Wextra
 
 all: $(SRCS) $(LIBFT)
-	$(CC) $(FLAGS) -o $(NAME) $(SRCS) -I$(INC) $(LIBFT)
+	$(CC) $(FLAGS) -o $(NAME) $(SRCS) -I$(INC) -I./libft/includes $(LIBFT) -g
 
 $(LIBFT):
 	make -C $(LIBDIR)

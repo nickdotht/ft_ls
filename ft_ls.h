@@ -6,22 +6,32 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2016/12/24 15:42:30 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/01/15 10:19:52 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FT_LS_H
 # define FT_LS_H
 #include <dirent.h>
-#include <stdio.h>
+# include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <time.h>
+#include "libft.h"
 
-void get_stat(char *file);
+typedef struct      s_format
+{
+   size_t           link;
+   size_t           owner;
+   size_t           group;
+   size_t           fileSize;
+}                   t_format;
+
+void ft_ls(char *target_dir);
+void get_stat(char *target_dir, char *file, int longest_filesize);
 
 #endif

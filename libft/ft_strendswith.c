@@ -1,41 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strstr.c                                        :+:      :+:    :+:   */
+/*   ft_strendswith.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/09/23 01:39:09 by jrameau           #+#    #+#             */
-/*   Updated: 2017/01/17 22:39:47 by jrameau          ###   ########.fr       */
+/*   Created: 2017/01/17 20:56:49 by jrameau           #+#    #+#             */
+/*   Updated: 2017/01/17 23:58:22 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strstr(const char *big, const char *little)
+int   ft_strendswith(char *s1, char *s2)
 {
-	int		i;
-	int		j;
-	int		k;
-	int		good;
+    int     i;
 
-	if (!ft_strlen(little))
-		return ((char *)big);
-	i = -1;
-	good = 0;
-	while (*(big + ++i) && !good)
-	{
-		if (*(big + i) == *(little + 0))
-		{
-			j = 0;
-			k = i;
-			good = 1;
-			while (*(little + j))
-				if (*(little + j++) != *(big + k++))
-					good = 0;
-			if (good)
-				return ((char *)big + i);
-		}
-	}
-	return (NULL);
+    i = -1;
+    while (s1[++i])
+        if (s1[i] == s2[0])
+            if (ft_strcmp(s1 + i, s2) == 0)
+                return (1);
+    return (0);
 }

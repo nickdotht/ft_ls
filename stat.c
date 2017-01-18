@@ -18,21 +18,16 @@ char *formatdate(char *buff, time_t val)
   return buff;
 }
 
-void get_stat(char *file)
+void get_stat(char *target_dir, char *file, int longest_filesize)
 {
   char buff[200];
-
   struct stat fileStat;
-  if(stat(file ,&fileStat) < 0)
+
+  if(stat(ft_pathjoin(target_dir, file), &fileStat) < 0 || ft_strstartswith(file, "."))
       return ;
 
-  printf("Information for %s\n",file);
-  printf("---------------------------\n");
-  printf("File Size: \t\t%ld bytes\n",fileStat.st_size);
-  printf("Number of Links: \t%lu\n",fileStat.st_nlink);
-  printf("File inode: \t\t%lu\n",fileStat.st_ino);
+  /* printf("File inode: \t\t%lu\n",fileStat.st_ino); */
 
-  printf("File Permissions: \t");
   printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
   printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
   printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
@@ -43,11 +38,13 @@ void get_stat(char *file)
   printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
   printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
   printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
-  printf("\n");
 
-  printf("Owner: %s\n", getpwuid(fileStat.st_uid)->pw_name);
-  printf("Owner group: %s\n", getgrgid(fileStat.st_gid)->gr_name);
-  printf("Last modified: %s\n", formatdate(buff, fileStat.st_mtime));
+  printf(" %lu",fileStat.st_nlink);
+  printf(" %s", getpwuid(fileStat.st_uid)->pw_name);
+  printf(" %s", getgrgid(fileStat.st_gid)->gr_name);
+  printf(" %*ld", longest_filesize, fileStat.st_size);
+  printf(" %s", formatdate(buff, fileStat.st_mtime));
+  printf(" %s\n",file);
 
-  printf("The file %s a symbolic link\n\n", (S_ISLNK(fileStat.st_mode)) ? "is" : "is not");
+  /* printf("The file %s a symbolic link\n\n", (S_ISLNK(fileStat.st_mode)) ? "is" : "is not"); */
 }
