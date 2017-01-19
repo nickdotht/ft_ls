@@ -18,7 +18,7 @@ char *formatdate(char *buff, time_t val)
   return buff;
 }
 
-void get_stat(char *target_dir, char *file, int longest_filesize)
+void get_stat(char *target_dir, char *file, t_format ll_format)
 {
   char buff[200];
   struct stat fileStat;
@@ -39,10 +39,10 @@ void get_stat(char *target_dir, char *file, int longest_filesize)
   printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
   printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
 
-  printf(" %lu",fileStat.st_nlink);
+  printf(" %*lu", ll_format.link, fileStat.st_nlink);
   printf(" %s", getpwuid(fileStat.st_uid)->pw_name);
   printf(" %s", getgrgid(fileStat.st_gid)->gr_name);
-  printf(" %*ld", longest_filesize, fileStat.st_size);
+  printf(" %*ld", ll_format.fileSize, fileStat.st_size);
   printf(" %s", formatdate(buff, fileStat.st_mtime));
   printf(" %s\n",file);
 

@@ -23,15 +23,16 @@
 #include <time.h>
 #include "libft.h"
 
-typedef struct      s_format
+typedef struct		s_format
 {
-   size_t           link;
-   size_t           owner;
-   size_t           group;
-   size_t           fileSize;
-}                   t_format;
+   int				link;
+   int				owner;
+   int				group;
+   int				fileSize;
+}					t_format;
 
-void ft_ls(char *target_dir);
-void get_stat(char *target_dir, char *file, int longest_filesize);
+void				ft_ls(char *target_dir);
+void				get_stat(char *target_dir, char *file, t_format ll_format);
+t_format			format_handler(char *target_dir);
 
 #endif

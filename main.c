@@ -12,44 +12,20 @@
 
 #include <ft_ls.h>
 
-int     get_longest_filesize(char *target_dir)
-{
-    struct dirent   *sd;
-	DIR				*dir;
-    int             longest;
-    struct stat     fileStat;
-
-    longest = 0;
-	if (!(dir = opendir(target_dir)))
-	{
-		printf("ls: cannot access '%s': No such file or directory\n", target_dir);
-		return (0);
-	}
-    while ((sd = readdir(dir)))
-    {
-        if (stat(ft_pathjoin(target_dir, sd->d_name), &fileStat) < 0)
-            return (0);
-        if (longest < ft_intlength(fileStat.st_size))
-            longest = ft_intlength(fileStat.st_size);
-    }
-    closedir(dir);
-    return (longest);
-}
-
 void ft_ls(char *target_dir) {
 	DIR				*dir;
 	struct dirent	*sd;
-    int             longest_filesize;
+	t_format		ll_format;
 
 
-    longest_filesize = get_longest_filesize(target_dir);
+    	ll_format = format_handler(target_dir);
 	if (!(dir = opendir(target_dir)))
 	{
 		printf("ls: cannot access '%s': No such file or directory\n", target_dir);
 		return ;
 	}
 	while ((sd = readdir(dir)))
-		get_stat(target_dir, sd->d_name, longest_filesize);
+		get_stat(target_dir, sd->d_name, ll_format);
 
 	closedir(dir);
 }
