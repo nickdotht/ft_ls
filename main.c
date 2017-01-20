@@ -35,6 +35,7 @@ int		main(int ac, char **av)
 	char					*target;
 	int						i;
 
+	arguments_handler(av);
 	if (ac == 1)
 	{
 		target = ".";
