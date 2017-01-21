@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/01/17 20:55:49 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/01/21 16:38:14 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,11 @@ void ft_ls(char *target_dir) {
 	struct dirent	*sd;
 	t_format		ll_format;
 
-
     	ll_format = format_handler(target_dir);
 	if (!(dir = opendir(target_dir)))
-	{
-		printf("ls: cannot access '%s': No such file or directory\n", target_dir);
-		return ;
-	}
+		return access_error(target_dir);
 	while ((sd = readdir(dir)))
 		get_stat(target_dir, sd->d_name, ll_format);
-
 	closedir(dir);
 }
 
@@ -34,8 +29,10 @@ int		main(int ac, char **av)
 {
 	char					*target;
 	int						i;
+	int						flags;
 
-	arguments_handler(av);
+	flags = 0;
+	argument_handler(av, &flags);
 	if (ac == 1)
 	{
 		target = ".";

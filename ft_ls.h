@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/01/19 10:46:47 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/01/21 16:28:28 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ typedef struct		s_format
 #define				ALL_FLAG 						4
 #define				REVERSE_FLAG 					8
 #define				NEWEST_FIRST_SORT_FLAG		16
-int					g_flags = 0;
-char				**g_target_dirs = NULL;
 
 void				ft_ls(char *target_dir);
 void				get_stat(char *target_dir, char *file, t_format ll_format);
 t_format			format_handler(char *target_dir);
-void				arguments_handler(char **av);
+void				argument_handler(char **args, int *flags);
+void				option_error(char option);
+void				long_option_error(char *option);
+void				display_help(void);
+void				access_error(char *target_dir);
 
 #endif
