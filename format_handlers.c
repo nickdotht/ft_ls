@@ -1,6 +1,6 @@
 #include "ft_ls.h"
 
-int     get_longest_filesize(char *target_dir)
+int         size_format(char *target_dir)
 {
 	struct dirent   *sd;
 	DIR				*dir;
@@ -24,7 +24,7 @@ int     get_longest_filesize(char *target_dir)
     return (longest);
 }
 
-int				get_longest_link(char *target_dir)
+int             link_format(char *target_dir)
 {
 	struct dirent   *sd;
 	DIR				*dir;
@@ -52,12 +52,11 @@ int				get_longest_link(char *target_dir)
     return (longest);
 }
 
-// TODO: CHeckout flags before doing this because the -a flag will be important to know if we should check dotfiles
-t_format		format_handler(char *target_dir)
-{
-	t_format		tmp;
+/* void            format_handler(t_format *format, t_dirs *dirs) */
+/* { */
+/* 	t_format		tmp; */
 
-	tmp.fileSize = get_longest_filesize(target_dir);
-	tmp.link = get_longest_link(target_dir);
-	return (tmp);
-}
+/* 	tmp.fileSize = size_format(target_dir); */
+/* 	tmp.link = link_format(target_dir); */
+/* 	return (tmp); */
+/* } */

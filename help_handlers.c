@@ -25,7 +25,7 @@ void		exits_help()
  	printf(" 2  if serious trouble (e.g., cannot access command-line argument).\n");
 }
 
-void		display_help(void)
+void		help_handler(void)
 {
 	usage_help();
 	printf("\n");

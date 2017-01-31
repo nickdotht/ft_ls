@@ -1,9 +1,11 @@
 #include "ft_ls.h"
 
-void	long_option_handler(char *option, int *flags)
+void	long_option_flag(char *option, t_flags *flags)
 {
+    t_etarget       target;
+
 	if (ft_strequ(option, "help"))
-		display_help();
+		help_handler();
 	else if (ft_strequ(option, "recursive"))
 		*flags |= RECURSIVE_FLAG;
 	else if (ft_strequ(option, "all"))
@@ -11,16 +13,20 @@ void	long_option_handler(char *option, int *flags)
 	else if (ft_strequ(option, "reverse"))
 		*flags |= REVERSE_FLAG;
 	else
-		long_option_error(option);
+    {
+        ft_strcpy(target.option, option);
+		error_handler(LONG_OPTION_ERR, target);
+    }
 }
 
-void	flag_handler(char *arg, int *flags)
+void	flag_handler(char *arg, t_flags *flags)
 {
-	int		i;
+	int		        i;
+    t_etarget       target;
 
-	i = 0;
 	if (ft_strstartswith(arg, "--"))
-		return long_option_handler(arg + 2, flags);
+		return long_option_flag(arg + 2, flags);
+	i = 0;
 	while (arg[++i])
 	{
 		if (arg[i] == 'l')
@@ -34,20 +40,10 @@ void	flag_handler(char *arg, int *flags)
 		else if (arg[i] == 't')
 			*flags |= NEWEST_FIRST_SORT_FLAG;
 		else
-			option_error(arg[i]);
+        {
+            target.flag = arg[i];
+            error_handler(FLAG_ERR, target);
+        }
 	}
 }
 
-void	argument_handler(char **args, int *flags)
-{
-	int		i;
-
-	i = -1;
-	while (args[++i])
-	{
-		if (ft_strstartswith(args[i], "-"))
-			flag_handler(args[i], flags);
-		// else
-		// 	dirs_handler(args[i]);
-	}
-}

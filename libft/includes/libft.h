@@ -114,5 +114,6 @@ int                 ft_strstartswith(char *s1, char *s2);
 int                 ft_intlength(int num);
 int					ft_strendswith(char *s1, char *s2);
 char                *ft_pathjoin(char *p1, char *p2);
+void	            ft_lstaddback(t_list **alst, t_list *new);
 
 #endif
