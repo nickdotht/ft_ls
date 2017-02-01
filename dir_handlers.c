@@ -1,6 +1,6 @@
 #include "ft_ls.h"
 
-t_dirs      *new_dir(char *name)
+t_dirs      *new_dir(char *name, t_status status)
 {
     t_dirs		*dir;
 
@@ -10,9 +10,9 @@ t_dirs      *new_dir(char *name)
 		dir->name = NULL;
 	else
 	{
-		if (!(dir->name = ft_strnew(ft_strlen(name))))
-			return (NULL);
-		ft_strcpy(dir->name, name);
+		if (!(dir->name = ft_strdup(name)))
+            return (NULL);
+        dir->status = status;
 	}
 	dir->next = NULL;
 	return (dir);
@@ -32,40 +32,35 @@ void	    add_dir(t_dirs **alst, t_dirs *new)
 	*alst = head;
 }
 
-int         check_dir(char *name)
+void         check_dir(char *name, t_status *status)
 {
     struct stat s;
-    int err;
 
-    err = stat(name, &s);
-    if(-1 == err)
+    *status = IS_DIR;
+    if(stat(name, &s) == -1)
     {
         if(ENOENT == errno)
-            printf("ls: cannot access '%s': No such file or directory\n", name);
-        return (0);
+            *status = IS_NONEXISTENT;
     }
     else
     {
         if(!S_ISDIR(s.st_mode))
-        {
-            printf("%s\n", name);
-            return (0);
-        }
+            *status = IS_NOTDIR;
     }
-    return (1);
 }
 
 void	    dir_handler(char *arg, t_dirs **dirs)
 {
-	t_dirs *new;
+	t_dirs      *new;
+    t_status    status;
 
-    if (!check_dir(arg))
-        return ;
+    status = 0;
+    check_dir(arg, &status);
 	if (!(*dirs)->name)
 	{
-		*dirs = new_dir(arg);
+		*dirs = new_dir(arg, status);
 		return ;
 	}
-	new =  new_dir(arg);
+	new =  new_dir(arg, status);
 	add_dir(dirs, new);
 }

@@ -48,15 +48,6 @@ void	argument_handler(char **args, t_flags *flags, t_dirs **dirs)
         dir_handler(".", dirs);
 }
 
-void    print_dirs(t_dirs *dirs)
-{
-    while (dirs)
-    {
-        printf("dir: %s\n", dirs->name);
-        dirs = dirs->next;
-    }
-}
-
 int		main(int ac, char **av)
 {
 	t_flags					flags;
@@ -66,7 +57,8 @@ int		main(int ac, char **av)
     flags = 0;
     if (ac)
         argument_handler(av + 1, &flags, &dirs);
-    print_dirs(dirs);
+    /* print_dirs(dirs); */
     /* file_handler(flags, &dirs); */
+    display_handler(dirs, flags);
 	return (0);
 }
