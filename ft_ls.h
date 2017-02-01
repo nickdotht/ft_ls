@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <time.h>
 #include "libft.h"
+#include <errno.h>
 
 typedef struct		s_format
 {
@@ -81,5 +82,6 @@ void				help_handler(void);
 void	            dir_handler(char *arg, t_dirs **dirs);
 void                flag_handler(char *arg, t_flags *flags);
 void                error_handler(t_errors err, t_etarget target);
+/* void                file_handler(t_flags flags, t_dirs **dirs); */
 
 #endif

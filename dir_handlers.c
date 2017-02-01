@@ -32,10 +32,35 @@ void	    add_dir(t_dirs **alst, t_dirs *new)
 	*alst = head;
 }
 
+int         check_dir(char *name)
+{
+    struct stat s;
+    int err;
+
+    err = stat(name, &s);
+    if(-1 == err)
+    {
+        if(ENOENT == errno)
+            printf("ls: cannot access '%s': No such file or directory\n", name);
+        return (0);
+    }
+    else
+    {
+        if(!S_ISDIR(s.st_mode))
+        {
+            printf("%s\n", name);
+            return (0);
+        }
+    }
+    return (1);
+}
+
 void	    dir_handler(char *arg, t_dirs **dirs)
 {
 	t_dirs *new;
 
+    if (!check_dir(arg))
+        return ;
 	if (!(*dirs)->name)
 	{
 		*dirs = new_dir(arg);

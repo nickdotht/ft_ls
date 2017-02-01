@@ -67,5 +67,6 @@ int		main(int ac, char **av)
     if (ac)
         argument_handler(av + 1, &flags, &dirs);
     print_dirs(dirs);
+    /* file_handler(flags, &dirs); */
 	return (0);
 }
