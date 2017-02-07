@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/02/04 09:50:58 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/02/07 11:52:14 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ void help_handler(void);
 void dir_handler(char **args, t_flags flags);
 void flag_handler(char **args, t_flags *flags);
 void error_handler(t_errors err, t_etarget target);
-void display_handler(t_dirs *dirs, t_flags flags);
+void display_handler(t_dirs *dirs, t_status target);
 void get_dir_info(t_dirs **dirs, t_flags flags);
 void file_handler(t_dirs **dirs, t_flags flags);
-void set_dir(char *arg, t_dirs **dirs, t_flags flags);
+void set_dir(char *arg, t_dirs **dirs);
 
 #endif
