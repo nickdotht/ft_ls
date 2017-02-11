@@ -2,3 +2,4 @@ ft_ls
 a.out
 *.o
 ft_ls.dSYM/
+*/*.a
