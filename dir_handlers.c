@@ -12,16 +12,16 @@ t_dirs *new_dir(char *name, t_status status) {
   return (dir);
 }
 
-void add_dir(t_dirs **alst, t_dirs *new) {
-  t_dirs *tmp;
-  t_dirs *head;
+void add_dir(t_dirs **dirs, t_dirs *new) {
+	t_dirs *tmp;
+	t_dirs *head;
 
-  tmp = *alst;
-  head = tmp;
+	tmp = *dirs;
+	head = tmp;
   while (tmp->next)
-    tmp = tmp->next;
-  tmp->next = new;
-  *alst = head;
+  		tmp = tmp->next;
+	tmp->next = new;
+	*dirs = head;
 }
 
 // void sort_dirs(t_dirs **dirs) {
@@ -41,31 +41,29 @@ void set_dir(char *arg, t_dirs **dirs) {
     if (!S_ISDIR(s.st_mode))
       status = IS_NOTDIR;
   }
-  if (*dirs == NULL) {
-    *dirs = new_dir(arg, status);
-    return;
-  }
   new = new_dir(arg, status);
-  add_dir(dirs, new);
+  if (!*dirs)
+    *dirs = new;
+  else
+    add_dir(dirs, new);
 }
 
 void dir_handler(char **args, t_flags flags) {
   int i;
   t_dirs *dirs;
 
-  if (!(dirs = (t_dirs *)malloc(sizeof(*dirs))))
-    return;
   i = -1;
+  dirs = NULL;
   while (args[++i])
     if (args[i][0] != '-')
       set_dir(args[i], &dirs);
   // sort_dirs(&dirs);
-  display_handler(dirs, IS_NONEXISTENT);
-  display_handler(dirs, IS_NOTDIR);
+  display_handler(dirs, flags, IS_NONEXISTENT);
+  display_handler(dirs, flags, IS_NOTDIR);
   while (dirs) {
     if (dirs->status & IS_DIR) {
-      file_handler(&dirs, flags);
-      display_handler(dirs, IS_DIR);
+      dirs->files = file_handler(dirs, flags);
+      display_handler(dirs, flags, IS_DIR);
       if (dirs->next /*  && !is_last_dir(dirs) */)
         printf("\n");
     }

@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/02/07 11:52:14 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/02/10 14:27:36 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ typedef struct s_dirs {
   char *name;
   t_status status;
   t_files *files;
+  t_files *self;
   t_format format;
   struct s_dirs *next;
 } t_dirs;
@@ -84,9 +85,9 @@ void help_handler(void);
 void dir_handler(char **args, t_flags flags);
 void flag_handler(char **args, t_flags *flags);
 void error_handler(t_errors err, t_etarget target);
-void display_handler(t_dirs *dirs, t_status target);
+void display_handler(t_dirs *dirs, t_flags flags, t_status target);
 void get_dir_info(t_dirs **dirs, t_flags flags);
-void file_handler(t_dirs **dirs, t_flags flags);
+t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
-
+void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags);
 #endif
