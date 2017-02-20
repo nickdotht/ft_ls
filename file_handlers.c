@@ -1,18 +1,25 @@
 #include "ft_ls.h"
 
-char *formatdate(char *buff, time_t val) {
-  strftime(buff, 200, "%b %d %H:%M", localtime(&val));
-  return buff;
+void add_date(t_files **curr_file, time_t val) {
+  char buff[200];
+
+  strftime(buff, 200, "%b", localtime(&val));
+  (*curr_file)->date.month = ft_strdup(buff);
+  strftime(buff, 200, "%-d", localtime(&val));
+  (*curr_file)->date.day = ft_strdup(buff);
+  strftime(buff, 200, "%H", localtime(&val));
+  (*curr_file)->date.hour = ft_strdup(buff);
+  strftime(buff, 200, "%M", localtime(&val));
+  (*curr_file)->date.minute = ft_strdup(buff);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags) {
-  char buff[200];
   struct stat f;
 
-  if (stat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0)
-    return;
-  if (!((*curr_file)->modes = ft_strnew(10)))
-    return;
+  if (stat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
+  !((*curr_file)->modes = ft_strnew(10)))
+    return; // DON't JUST DO RETURN HERE, EXIT!!
+  format_handler(dirs, f);
   (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
   (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
@@ -27,7 +34,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
   (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
   (*curr_file)->size = f.st_size;
-  (*curr_file)->date = ft_strdup(formatdate(buff, f.st_mtime));
+  add_date(curr_file, f.st_mtime);
   (*curr_file)->name = ft_strdup(file_name);
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, file_name), dirs);

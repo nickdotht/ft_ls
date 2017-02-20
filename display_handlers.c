@@ -1,12 +1,15 @@
 #include "ft_ls.h"
 
-void long_listing_display(t_files *file) {
-  printf("%s ", file->modes);
-  printf("%ld ", file->link);
-  printf("%s ", file->owner);
-  printf("%s ", file->group);
-  printf("%ld ", file->size);
-  printf("%s ", file->date);
+void long_listing_display(t_format format, t_files *file) {
+  printf("%s  ", file->modes);
+  printf("%*ld ", format.link, file->link);
+  printf("%*s  ", format.owner, file->owner);
+  printf("%*s  ", format.group, file->group);
+  printf("%*ld ", format.fileSize, file->size);
+  printf("%*s ", format.date_month, file->date.month);
+  printf("%*s ", format.date_day, file->date.day);
+  printf("%*s:", format.date_hour, file->date.hour);
+  printf("%*s ", format.date_minute, file->date.minute);
   printf("%s\n", file->name);
 }
 
@@ -15,25 +18,29 @@ void long_listing_display(t_files *file) {
 // }
 void nondir_display(t_dirs *dirs, t_flags flags) {
   t_dirs *tmp;
+  int    displayed;
 
   tmp = dirs;
+  displayed = 0;
   while (tmp)
   {
-    if (tmp->status & IS_NOTDIR)
+    if ((tmp->status & IS_NOTDIR) == IS_NOTDIR)
     {
       tmp->self = (t_files *)malloc(sizeof(t_files));
       add_file(&tmp->self, &tmp, NULL, tmp->name, flags);
-      tmp->next = NULL;
-      long_listing_display(tmp->self);
+      long_listing_display(dirs->format, tmp->self);
+      displayed = 1;
     }
     tmp = tmp->next;
   }
+  if (displayed)
+    printf("\n");
 }
 
-void dir_files_display(t_files *files) {
+void dir_files_display(t_format format, t_files *files) {
   while (files->next)
   {
-    long_listing_display(files);
+    long_listing_display(format, files);
     files = files->next;
   }
 }
@@ -42,10 +49,10 @@ void display_handler(t_dirs *dirs, t_flags flags, t_status target) {
   t_etarget etarget;
   t_dirs  *tmp;
 
-  if (target & IS_NONEXISTENT) {
+  if ((target & IS_NONEXISTENT) == IS_NONEXISTENT) {
     tmp = dirs;
     while (tmp) {
-      if (tmp->status & IS_NONEXISTENT) {
+      if ((tmp->status & IS_NONEXISTENT) == IS_NONEXISTENT) {
         if (!(etarget.file = ft_strdup(tmp->name)))
           return;
         error_handler(NONEXISTENT_ERR, etarget);
@@ -53,12 +60,12 @@ void display_handler(t_dirs *dirs, t_flags flags, t_status target) {
       tmp = tmp->next;
     }
   }
-  else if (target & IS_NOTDIR)
+  else if ((target & IS_NOTDIR) == IS_NOTDIR)
       nondir_display(dirs, flags);
   else
   {
     printf("%s:\n", dirs->name);
-    dir_files_display(dirs->files);
+    dir_files_display(dirs->format, dirs->files);
   }
 }// if (!(flags & LONG_LISTING_FLAG))
 //   return column_display(dirs, flags, target);

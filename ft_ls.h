@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/02/10 14:27:36 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/02/19 01:28:32 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ typedef struct s_format {
   int owner;
   int group;
   int fileSize;
+  int date_month;
+  int date_day;
+  int date_hour;
+  int date_minute;
 } t_format;
 
 typedef enum e_flags {
@@ -46,13 +50,20 @@ typedef enum e_errors {
   NONEXISTENT_ERR = 8
 } t_errors;
 
+typedef struct s_date {
+  char *month;
+  char *day;
+  char *hour;
+  char *minute;
+} t_date;
+
 typedef struct s_files {
   char *modes;
   long int link;
   char *owner;
   char *group;
   long int size;
-  char *date;
+  t_date date;
   char *name;
   struct s_files *next;
 } t_files;
@@ -80,7 +91,6 @@ typedef union u_etarget {
 
 void ft_ls(char *target_dir);
 void get_stat(char *target_dir, char *file, t_format ll_format);
-void format_handler(t_format *format, t_dirs *dirs);
 void help_handler(void);
 void dir_handler(char **args, t_flags flags);
 void flag_handler(char **args, t_flags *flags);
@@ -90,4 +100,5 @@ void get_dir_info(t_dirs **dirs, t_flags flags);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags);
+void format_handler(t_dirs **dirs, struct stat file_stat);
 #endif

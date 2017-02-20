@@ -8,6 +8,14 @@ t_dirs *new_dir(char *name, t_status status) {
   if (!(dir->name = ft_strdup(name)))
     return (NULL);
   dir->status = status;
+  dir->format.link = 0;
+  dir->format.owner = 0;
+  dir->format.group = 0;
+  dir->format.fileSize = 0;
+  dir->format.date_month = 3;
+  dir->format.date_day = 2;
+  dir->format.date_hour = 2;
+  dir->format.date_minute = 2;
   dir->next = NULL;
   return (dir);
 }
@@ -23,7 +31,7 @@ void add_dir(t_dirs **dirs, t_dirs *new) {
 	tmp->next = new;
 	*dirs = head;
 }
-
+// 
 // void sort_dirs(t_dirs **dirs) {
 //
 // }
