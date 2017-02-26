@@ -6,19 +6,20 @@
 #    By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/13 11:43:23 by jrameau           #+#    #+#              #
-#    Updated: 2017/02/10 15:34:05 by jrameau          ###   ########.fr        #
+#    Updated: 2017/02/21 16:58:15 by jrameau          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_ls
 
-SRCS = 	$(shell ls | grep -E ".+\.c")
+SRCS = 	$(shell ls src | grep -E ".+\.c")
 
 LIBDIR = ./libft/
-INC = .
+INC = ./inc
 LIBFT = ./libft/libft.a
 CC = gcc
 FLAGS = -Wall -Werror -Wextra
+OPTIMIZATION = -O3 -funroll-loops
 
 all: $(SRCS) $(LIBFT)
 	$(CC) $(FLAGS) -o $(NAME) $(SRCS) -I$(INC) -I./libft/includes $(LIBFT) -g
