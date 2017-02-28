@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/02/28 05:43:35 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/02/28 06:30:43 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,5 +21,5 @@ int main(int ac, char **av) {
     i = flag_handler(av + 1, &flags);
     dir_handler(av + i, ac - i, flags);
   }
-  exit(1);
+  exit(0);
 }
