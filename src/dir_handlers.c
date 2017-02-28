@@ -77,7 +77,7 @@ void dir_handler(char **args, int num_args, t_flags flags) {
     if ((dirs->status & IS_DIR) == IS_DIR) {
       dirs->files = file_handler(dirs, flags);
       display_handler(dirs, flags, IS_DIR);
-      if (dirs->next /*  && !is_last_dir(dirs) */)
+      if (!is_last_dir(dirs))
         printf("\n");
     }
     dirs = dirs->next;

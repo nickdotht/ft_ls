@@ -18,10 +18,10 @@ void long_listing_display(t_format format, t_files *file) {
 // }
 void nondir_display(t_dirs *dirs, t_flags flags) {
   t_dirs *tmp;
-  int    displayed;
+  int should_separate;
 
   tmp = dirs;
-  displayed = 0;
+  should_separate = has_dirs(dirs);
   while (tmp)
   {
     if ((tmp->status & IS_NOTDIR) == IS_NOTDIR)
@@ -29,12 +29,11 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
       tmp->self = (t_files *)malloc(sizeof(t_files));
       add_file(&tmp->self, &tmp, NULL, tmp->name, flags);
       long_listing_display(dirs->format, tmp->self);
-      displayed = 1;
+      if (is_last_nondir(tmp) && should_separate)
+        printf("\n");
     }
     tmp = tmp->next;
   }
-  if (displayed)
-    printf("\n");
 }
 
 void dir_files_display(t_format format, t_files *files) {

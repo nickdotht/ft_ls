@@ -4,3 +4,4 @@ a.out
 ft_ls.dSYM/
 */*.a
 test/*
+.nfs.*

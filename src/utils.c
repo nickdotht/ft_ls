@@ -1,0 +1,43 @@
+#include "ft_ls.h"
+
+int is_last_dir(t_dirs *dirs)
+{
+  t_dirs *tmp;
+
+  tmp = dirs;
+  while (tmp->next)
+  {
+    if ((tmp->status & IS_DIR) == IS_DIR)
+      return (0);
+    tmp = tmp->next;
+  }
+  return (1);
+}
+
+int is_last_nondir(t_dirs *dirs)
+{
+  t_dirs *tmp;
+
+  tmp = dirs->next;
+  while (tmp)
+  {
+    if ((tmp->status & IS_NOTDIR) == IS_NOTDIR)
+      return (0);
+    tmp = tmp->next;
+  }
+  return (1);
+}
+
+int has_dirs(t_dirs *dirs)
+{
+  t_dirs *tmp;
+
+  tmp = dirs;
+  while (tmp)
+  {
+    if ((tmp->status & IS_DIR) == IS_DIR)
+      return (1);
+    tmp = tmp->next;
+  }
+  return (0);
+}
