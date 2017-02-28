@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/02/19 01:28:32 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/02/28 05:33:41 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ typedef enum e_flags {
 
 typedef enum e_errors {
   FLAG_ERR = 1,
-  LONG_OPTION_ERR = 2,
   FILE_ACCESS_ERR = 4,
   NONEXISTENT_ERR = 8
 } t_errors;
@@ -80,11 +79,11 @@ typedef struct s_dirs {
   t_files *files;
   t_files *self;
   t_format format;
+  int       is_default;
   struct s_dirs *next;
 } t_dirs;
 
 typedef union u_etarget {
-  char *option;
   char flag;
   char *file;
 } t_etarget;
@@ -92,8 +91,8 @@ typedef union u_etarget {
 void ft_ls(char *target_dir);
 void get_stat(char *target_dir, char *file, t_format ll_format);
 void help_handler(void);
-void dir_handler(char **args, t_flags flags);
-void flag_handler(char **args, t_flags *flags);
+void dir_handler(char **args, int num_args, t_flags flags);
+int flag_handler(char **args, t_flags *flags);
 void error_handler(t_errors err, t_etarget target);
 void display_handler(t_dirs *dirs, t_flags flags, t_status target);
 void get_dir_info(t_dirs **dirs, t_flags flags);

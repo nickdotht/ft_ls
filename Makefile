@@ -6,33 +6,62 @@
 #    By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/13 11:43:23 by jrameau           #+#    #+#              #
-#    Updated: 2017/02/21 16:58:15 by jrameau          ###   ########.fr        #
+#    Updated: 2017/02/28 02:28:34 by jrameau          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+# Project file
 NAME = ft_ls
 
-SRCS = 	$(shell ls src | grep -E ".+\.c")
+# Project builds and dirs
+SRCDIR = ./src/
+SRCNAMES = $(shell ls $(SRCDIR) | grep -E ".+\.c")
+SRC = $(addprefix $(SRCDIR), $(SRCNAMES))
+INC = ./inc/
+BUILDDIR = ./build/
+BUILDOBJS = $(addprefix $(BUILDDIR), $(SRCNAMES:.c=.o))
 
+# Libft builds and dirs
 LIBDIR = ./libft/
-INC = ./inc
 LIBFT = ./libft/libft.a
+LIBINC = ./libft/includes/
+
+# Optimization and Compiler flags and commands
 CC = gcc
-FLAGS = -Wall -Werror -Wextra
-OPTIMIZATION = -O3 -funroll-loops
+OPFLAGS = -O3 -funroll-loops
+CFLAGS = -Wall -Werror -Wextra
 
-all: $(SRCS) $(LIBFT)
-	$(CC) $(FLAGS) -o $(NAME) $(SRCS) -I$(INC) -I./libft/includes $(LIBFT) -g
+# Main rule
+all: $(BUILDDIR) $(LIBFT) $(NAME)
 
+# Object dir rule
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
+
+# Objects rule
+$(BUILDDIR)%.o:$(SRCDIR)%.c
+	$(CC) $(CFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
+
+# Project file rule
+$(NAME): $(BUILDOBJS)
+	$(CC) $(OPFLAGS) $(CFLAGS) -o $(NAME) $(BUILDOBJS) $(LIBFT)
+
+# Libft rule
 $(LIBFT):
 	make -C $(LIBDIR)
 
+# Cleaning up the build files
 clean:
-	/bin/rm -rf $(NAME)
+	rm -rf $(BUILDDIR)
+	make -C $(LIBDIR) clean
 
+# Getting rid of the project file
 fclean: clean
-	/bin/rm -rf $(NAME)
+	rm -rf $(NAME)
+	make -C $(LIBDIR) fclean
 
+# Do both of the above
 re: fclean all
 
+# Just in case those files exist in the root dir
 .PHONY: all fclean clean re

@@ -12,8 +12,8 @@ void long_option_flag(char *option, t_flags *flags) {
   else if (ft_strequ(option, "reverse"))
     *flags |= REVERSE_FLAG;
   else {
-    ft_strcpy(target.option, option);
-    error_handler(LONG_OPTION_ERR, target);
+    target.flag = '-';
+    error_handler(FLAG_ERR, target);
   }
 }
 
@@ -21,7 +21,7 @@ void set_flag(char *arg, t_flags *flags) {
   int i;
   t_etarget target;
 
-  if (ft_strstartswith(arg, "--"))
+  if (ft_strstartswith(arg, "--") && arg[2])
     return long_option_flag(arg + 2, flags);
   i = 0;
   while (arg[++i]) {
@@ -42,13 +42,21 @@ void set_flag(char *arg, t_flags *flags) {
   }
 }
 
-void flag_handler(char **args, t_flags *flags) {
+int flag_handler(char **args, t_flags *flags) {
   int i;
 
   i = -1;
   while (args[++i]) {
-    if (args[i][0] == '-') {
-      set_flag(args[i], flags);
+    if (args[i][0] != '-')
+      break;
+    if (ft_strequ(args[i], "--")) {
+      i++;
+      break;
     }
+    if (args[i][0] == '-' && args[i][1])
+      set_flag(args[i], flags);
+    else
+      break;
   }
+  return (i + 1);
 }

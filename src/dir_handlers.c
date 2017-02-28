@@ -1,6 +1,6 @@
 #include "ft_ls.h"
 
-t_dirs *new_dir(char *name, t_status status) {
+t_dirs *new_dir(char *name, t_status status, int is_default) {
   t_dirs *dir;
 
   if (!(dir = (t_dirs *)malloc(sizeof(*dir))))
@@ -17,6 +17,7 @@ t_dirs *new_dir(char *name, t_status status) {
   dir->format.date_hour = 2;
   dir->format.date_minute = 2;
   dir->next = NULL;
+  dir->is_default = is_default;
   return (dir);
 }
 
@@ -34,7 +35,9 @@ void add_dir(t_dirs **dirs, t_dirs *new) {
 
 int dir_cmp(const void *a, const void *b)
 {
-    return ft_strcmp((char *)b, (char *)a);
+    char * const *first = a;
+    char * const *second = b;
+    return (strcmp(*first, *second));
 }
 
 void set_dir(char *arg, t_dirs **dirs) {
@@ -50,22 +53,23 @@ void set_dir(char *arg, t_dirs **dirs) {
     if (!S_ISDIR(s.st_mode))
       status = IS_NOTDIR;
   }
-  new = new_dir(arg, status);
-  if (!*dirs)
+  new = new_dir(arg, status, 0);
+  if (!*dirs || (*dirs)->is_default) {
     *dirs = new;
-  else
+  }
+  else {
     add_dir(dirs, new);
+  }
 }
 
-void dir_handler(char **args, t_flags flags) {
+void dir_handler(char **args, int num_args, t_flags flags) {
   int i;
   t_dirs *dirs;
 
   i = -1;
-  dirs = NULL;
-  qsort(args, 2, sizeof(char *), dir_cmp);
+  dirs = new_dir(".", IS_DIR, 1);
+  qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
-    if (args[i][0] != '-')
       set_dir(args[i], &dirs);
   display_handler(dirs, flags, IS_NONEXISTENT);
   display_handler(dirs, flags, IS_NOTDIR);
