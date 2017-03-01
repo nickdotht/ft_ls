@@ -4,8 +4,8 @@ int is_last_dir(t_dirs *dirs)
 {
   t_dirs *tmp;
 
-  tmp = dirs;
-  while (tmp->next)
+  tmp = dirs->next;
+  while (tmp)
   {
     if ((tmp->status & IS_DIR) == IS_DIR)
       return (0);
@@ -40,4 +40,19 @@ int has_dirs(t_dirs *dirs)
     tmp = tmp->next;
   }
   return (0);
+}
+
+int is_only_dir(t_dirs *head)
+{
+  t_dirs *tmp;
+  int count;
+
+  tmp = head;
+  count = 0;
+  while (tmp)
+  {
+      count++;
+      tmp = tmp->next;
+  }
+  return (count > 1 ? 0 : 1);
 }

@@ -65,18 +65,20 @@ void set_dir(char *arg, t_dirs **dirs) {
 void dir_handler(char **args, int num_args, t_flags flags) {
   int i;
   t_dirs *dirs;
+  t_dirs *head;
 
   i = -1;
   dirs = new_dir(".", IS_DIR, 1);
   qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
       set_dir(args[i], &dirs);
-  display_handler(dirs, flags, IS_NONEXISTENT);
-  display_handler(dirs, flags, IS_NOTDIR);
+  head = dirs;
+  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
+  display_handler(NULL, dirs, flags, IS_NOTDIR);
   while (dirs) {
     if ((dirs->status & IS_DIR) == IS_DIR) {
       dirs->files = file_handler(dirs, flags);
-      display_handler(dirs, flags, IS_DIR);
+      display_handler(head, dirs, flags, IS_DIR);
       if (!is_last_dir(dirs))
         printf("\n");
     }

@@ -44,7 +44,7 @@ void dir_files_display(t_format format, t_files *files) {
   }
 }
 
-void display_handler(t_dirs *dirs, t_flags flags, t_status target) {
+void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, t_status target) {
   t_etarget etarget;
   t_dirs  *tmp;
 
@@ -63,7 +63,9 @@ void display_handler(t_dirs *dirs, t_flags flags, t_status target) {
       nondir_display(dirs, flags);
   else
   {
-    printf("%s:\n", dirs->name);
+    if (!is_only_dir(head)) {
+      printf("%s:\n", dirs->name);
+    }
     dir_files_display(dirs->format, dirs->files);
   }
 }// if (!(flags & LONG_LISTING_FLAG))
