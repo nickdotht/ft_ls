@@ -78,6 +78,13 @@ void dir_handler(char **args, int num_args, t_flags flags) {
   while (dirs) {
     if ((dirs->status & IS_DIR) == IS_DIR) {
       dirs->files = file_handler(dirs, flags);
+      // printf("ABOUT TO START\n");
+      while (dirs->sub_dirs)
+      {
+        printf("%s\n", dirs->sub_dirs->name);
+        dirs->sub_dirs = dirs->sub_dirs->next;
+      }
+      exit(1);
       display_handler(head, dirs, flags, IS_DIR);
       if (!is_last_dir(dirs))
         printf("\n");

@@ -18,7 +18,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
 
   if (stat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
-    return; // DON't JUST DO RETURN HERE, EXIT!!
+    exit(2);
   format_handler(dirs, f);
   (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
@@ -37,7 +37,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   add_date(curr_file, f.st_mtime);
   (*curr_file)->name = ft_strdup(file_name);
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
-    set_dir(ft_pathjoin(dir_name, file_name), dirs);
+    set_dir(ft_pathjoin(dir_name, file_name), &(*dirs)->sub_dirs);
 }
 
 t_files *file_handler(t_dirs *dirs, t_flags flags) {
