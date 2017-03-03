@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/01 09:09:10 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/02 18:37:26 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+#define DIRS_MEM 1
+#define SUBDIRS_MEM 2
+#define FILES_MEM 4
 
 typedef struct s_format {
   int link;
@@ -89,6 +93,7 @@ typedef union u_etarget {
   char *file;
 } t_etarget;
 
+
 void ft_ls(char *target_dir);
 void get_stat(char *target_dir, char *file, t_format ll_format);
 void help_handler(void);
@@ -100,8 +105,10 @@ void get_dir_info(t_dirs **dirs, t_flags flags);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags);
+void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);
+t_dirs *subdir_handler(t_dirs *dirs);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
 int has_dirs(t_dirs *dirs);

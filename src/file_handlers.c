@@ -1,16 +1,16 @@
 #include "ft_ls.h"
 
-void add_date(t_files **curr_file, time_t val) {
+void add_date(t_date *date, time_t val) {
   char buff[200];
 
   strftime(buff, 200, "%b", localtime(&val));
-  (*curr_file)->date.month = ft_strdup(buff);
+  date->month = ft_strdup(buff);
   strftime(buff, 200, "%-d", localtime(&val));
-  (*curr_file)->date.day = ft_strdup(buff);
+  date->day = ft_strdup(buff);
   strftime(buff, 200, "%H", localtime(&val));
-  (*curr_file)->date.hour = ft_strdup(buff);
+  date->hour = ft_strdup(buff);
   strftime(buff, 200, "%M", localtime(&val));
-  (*curr_file)->date.minute = ft_strdup(buff);
+  date->minute = ft_strdup(buff);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags) {
@@ -34,7 +34,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
   (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
   (*curr_file)->size = f.st_size;
-  add_date(curr_file, f.st_mtime);
+  add_date(&(*curr_file)->date, f.st_mtime);
   (*curr_file)->name = ft_strdup(file_name);
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, file_name), &(*dirs)->sub_dirs);
