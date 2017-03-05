@@ -16,7 +16,7 @@ void add_date(t_date *date, time_t val) {
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags) {
   struct stat f;
 
-  if (stat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
+  if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
   format_handler(dirs, f);

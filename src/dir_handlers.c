@@ -1,6 +1,6 @@
 #include "ft_ls.h"
 
-t_dirs *new_dir(char *name, t_status status, int is_default) {
+t_dirs *new_dir(char *name, int status, int is_default) {
   t_dirs *dir;
 
   if (!(dir = (t_dirs *)malloc(sizeof(*dir))))
@@ -42,7 +42,7 @@ int dir_cmp(const void *a, const void *b)
 
 void set_dir(char *arg, t_dirs **dirs) {
   t_dirs *new;
-  t_status status;
+  int status;
   struct stat s;
 
   status = IS_DIR;
@@ -62,27 +62,14 @@ void set_dir(char *arg, t_dirs **dirs) {
   }
 }
 
-void dir_handler(char **args, int num_args, t_flags flags) {
+t_dirs *dir_handler(char **args, int num_args) {
   int i;
   t_dirs *dirs;
-  t_dirs *head;
 
   i = -1;
   dirs = new_dir(".", IS_DIR, 1);
   qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
       set_dir(args[i], &dirs);
-  head = dirs;
-  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
-  display_handler(NULL, dirs, flags, IS_NOTDIR);
-  while (dirs) {
-    if ((dirs->status & IS_DIR) == IS_DIR) {
-      dirs->files = file_handler(dirs, flags);
-      dirs->next = subdir_handler(dirs);
-      display_handler(head, dirs, flags, IS_DIR);
-      if (!is_last_dir(dirs))
-        printf("\n");
-    }
-    dirs = dirs->next;
-  }
+  return (dirs);
 }

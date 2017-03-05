@@ -5,3 +5,4 @@ ft_ls.dSYM/
 */*.a
 test/*
 .nfs.*
+*DS_Store

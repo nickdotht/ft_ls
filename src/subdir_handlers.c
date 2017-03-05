@@ -12,5 +12,5 @@ t_dirs *subdir_handler(t_dirs *dirs)
     tmp = tmp->next;
   }
   tmp->next = dirs->next;
-  return (tmp);
+  return (dirs->sub_dirs);
 }

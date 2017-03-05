@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/02 18:37:26 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/04 18:57:57 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,14 @@
 #define SUBDIRS_MEM 2
 #define FILES_MEM 4
 
+#define FLAG_ERR 1
+#define FILE_ACCESS_ERR 2
+#define NONEXISTENT_ERR 4
+
+#define IS_NONEXISTENT 1
+#define IS_NOTDIR 2
+#define IS_DIR 4
+
 typedef struct s_format {
   int link;
   int owner;
@@ -47,12 +55,6 @@ typedef enum e_flags {
   NEWEST_FIRST_SORT_FLAG = 16
 } t_flags;
 
-typedef enum e_errors {
-  FLAG_ERR = 1,
-  FILE_ACCESS_ERR = 4,
-  NONEXISTENT_ERR = 8
-} t_errors;
-
 typedef struct s_date {
   char *month;
   char *day;
@@ -71,15 +73,9 @@ typedef struct s_files {
   struct s_files *next;
 } t_files;
 
-typedef enum e_status {
-  IS_NONEXISTENT = 1,
-  IS_NOTDIR = 2,
-  IS_DIR = 4
-} t_status;
-
 typedef struct s_dirs {
   char *name;
-  t_status status;
+  int status;
   t_files *files;
   t_files *self;
   t_format format;
@@ -97,10 +93,10 @@ typedef union u_etarget {
 void ft_ls(char *target_dir);
 void get_stat(char *target_dir, char *file, t_format ll_format);
 void help_handler(void);
-void dir_handler(char **args, int num_args, t_flags flags);
+t_dirs *dir_handler(char **args, int num_args);
 int flag_handler(char **args, t_flags *flags);
-void error_handler(t_errors err, t_etarget target);
-void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, t_status target);
+void error_handler(int err, t_etarget target);
+void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
 void get_dir_info(t_dirs **dirs, t_flags flags);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
@@ -109,6 +105,7 @@ void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);
 t_dirs *subdir_handler(t_dirs *dirs);
+void memory_handler(void *mem_target, int target);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
 int has_dirs(t_dirs *dirs);

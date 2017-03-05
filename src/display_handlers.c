@@ -24,7 +24,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   should_separate = has_dirs(dirs);
   while (tmp)
   {
-    if ((tmp->status & IS_NOTDIR) == IS_NOTDIR)
+    if (tmp->status == IS_NOTDIR)
     {
       tmp->self = (t_files *)malloc(sizeof(t_files));
       add_file(&tmp->self, &tmp, NULL, tmp->name, flags);
@@ -44,14 +44,14 @@ void dir_files_display(t_format format, t_files *files) {
   }
 }
 
-void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, t_status target) {
+void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   t_etarget etarget;
   t_dirs  *tmp;
 
-  if ((target & IS_NONEXISTENT) == IS_NONEXISTENT) {
+  if (target == IS_NONEXISTENT) {
     tmp = dirs;
     while (tmp) {
-      if ((tmp->status & IS_NONEXISTENT) == IS_NONEXISTENT) {
+      if (tmp->status == IS_NONEXISTENT) {
         if (!(etarget.file = ft_strdup(tmp->name)))
           return;
         error_handler(NONEXISTENT_ERR, etarget);
@@ -59,7 +59,7 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, t_status target)
       tmp = tmp->next;
     }
   }
-  else if ((target & IS_NOTDIR) == IS_NOTDIR)
+  else if (target == IS_NOTDIR)
       nondir_display(dirs, flags);
   else
   {
