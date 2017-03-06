@@ -44,6 +44,16 @@ void dir_files_display(t_format format, t_files *files) {
   }
 }
 
+void dir_display(t_dirs *head, t_dirs *dirs) {
+  if (!is_only_dir(head)) {
+    printf("%s:\n", dirs->name);
+  }
+  if (!dirs->is_unreadable)
+    dir_files_display(dirs->format, dirs->files);
+  else
+    printf("ft_ls: %s: Permission denied\n", dirs->name);
+}
+
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   t_etarget etarget;
   t_dirs  *tmp;
@@ -62,11 +72,6 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   else if (target == IS_NOTDIR)
       nondir_display(dirs, flags);
   else
-  {
-    if (!is_only_dir(head)) {
-      printf("%s:\n", dirs->name);
-    }
-    dir_files_display(dirs->format, dirs->files);
-  }
+    dir_display(head, dirs);
 }// if (!(flags & LONG_LISTING_FLAG))
 //   return column_display(dirs, flags, target);

@@ -7,7 +7,7 @@ int is_last_dir(t_dirs *dirs)
   tmp = dirs->next;
   while (tmp)
   {
-    if ((tmp->status & IS_DIR) == IS_DIR)
+    if (tmp->status == IS_DIR)
       return (0);
     tmp = tmp->next;
   }
@@ -21,7 +21,7 @@ int is_last_nondir(t_dirs *dirs)
   tmp = dirs->next;
   while (tmp)
   {
-    if ((tmp->status & IS_NOTDIR) == IS_NOTDIR)
+    if (tmp->status == IS_NOTDIR)
       return (0);
     tmp = tmp->next;
   }
@@ -35,7 +35,7 @@ int has_dirs(t_dirs *dirs)
   tmp = dirs;
   while (tmp)
   {
-    if ((tmp->status & IS_DIR) == IS_DIR)
+    if (tmp->status == IS_DIR)
       return (1);
     tmp = tmp->next;
   }

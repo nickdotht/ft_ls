@@ -46,7 +46,11 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   t_files *new;
   t_files *head;
 
-  dir = opendir(dirs->name);
+  if (!(dir = opendir(dirs->name)))
+  {
+    dirs->is_unreadable = 1;
+    return (NULL);
+  }
   if (!(new = (t_files *)malloc(sizeof(t_files))))
     return (NULL);
   head = new;

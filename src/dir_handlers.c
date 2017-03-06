@@ -18,6 +18,7 @@ t_dirs *new_dir(char *name, int status, int is_default) {
   dir->format.date_minute = 2;
   dir->next = NULL;
   dir->is_default = is_default;
+  dir->is_unreadable = 0;
   return (dir);
 }
 

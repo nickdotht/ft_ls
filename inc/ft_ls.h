@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/04 18:57:57 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/05 18:17:33 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ typedef struct s_dirs {
   t_files *self;
   t_format format;
   int       is_default;
+  int       is_unreadable;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
 } t_dirs;
