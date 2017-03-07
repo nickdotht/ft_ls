@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/05 17:13:56 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/06 23:42:01 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int main(int ac, char **av) {
       dirs->files = file_handler(dirs, flags);
       dirs->next = subdir_handler(dirs);
       display_handler(head, dirs, flags, IS_DIR);
-      memory_handler(&dirs->sub_dirs, SUBDIRS_MEM);
+      /* memory_handler(&dirs->sub_dirs, SUBDIRS_MEM); */
       if (!is_last_dir(dirs))
         printf("\n");
     }
