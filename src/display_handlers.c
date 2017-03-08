@@ -26,7 +26,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   {
     if (tmp->status == IS_NOTDIR)
     {
-      tmp->self = (t_files *)malloc(sizeof(t_files));
+      tmp->self = (t_files *)ft_memalloc(sizeof(t_files));
       add_file(&tmp->self, &tmp, NULL, tmp->name, flags);
       long_listing_display(dirs->format, tmp->self);
       if (is_last_nondir(tmp) && should_separate)

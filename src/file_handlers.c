@@ -51,21 +51,18 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
     dirs->is_unreadable = 1;
     return (NULL);
   }
-  if (!(new = (t_files *)malloc(sizeof(t_files))))
+  if (!(new = (t_files *)ft_memalloc(sizeof(t_files))))
     return (NULL);
   head = new;
   while ((sd = readdir(dir))) {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     add_file(&new, &dirs, dirs->name, sd->d_name, flags);
-    if (!(new->next = (t_files *)malloc(sizeof(t_files))))
+    if (!(new->next = (t_files *)ft_memalloc(sizeof(t_files))))
       return (NULL);
     new = new->next;
   }
-  if (!new)
-    new = NULL;
-  else
-    new->next = NULL;
+  new->next = NULL;
   closedir(dir);
   return (head);
 }

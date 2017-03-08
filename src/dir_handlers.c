@@ -3,10 +3,10 @@
 t_dirs *new_dir(char *name, int status, int is_default) {
   t_dirs *dir;
 
-  if (!(dir = (t_dirs *)malloc(sizeof(*dir))))
-    return (NULL);
+  if (!(dir = (t_dirs *)ft_memalloc(sizeof(*dir))))
+    exit(2);
   if (!(dir->name = ft_strdup(name)))
-    return (NULL);
+    exit(2);
   dir->status = status;
   dir->format.link = 0;
   dir->format.owner = 0;
@@ -38,7 +38,7 @@ int dir_cmp(const void *a, const void *b)
 {
     char * const *first = a;
     char * const *second = b;
-    return (strcmp(*first, *second));
+    return (ft_strcmp(*first, *second));
 }
 
 void set_dir(char *arg, t_dirs **dirs) {
@@ -47,7 +47,7 @@ void set_dir(char *arg, t_dirs **dirs) {
   struct stat s;
 
   status = IS_DIR;
-  if (stat(arg, &s) == -1) {
+  if (lstat(arg, &s) == -1) {
     if (ENOENT == errno)
       status = IS_NONEXISTENT;
   } else {
