@@ -6,13 +6,14 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/07 23:38:25 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/14 21:38:52 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_ls.h>
 
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
   t_flags flags;
   int     i;
   t_dirs *head;
@@ -24,8 +25,10 @@ int main(int ac, char **av) {
   display_handler(NULL, dirs, flags, IS_NONEXISTENT);
   display_handler(NULL, dirs, flags, IS_NOTDIR);
   head = dirs;
-  while (dirs) {
-    if (dirs->status == IS_DIR) {
+  while (dirs)
+  {
+    if (dirs->status == IS_DIR)
+    {
       dirs->files = file_handler(dirs, flags);
       display_handler(head, dirs, flags, IS_DIR);
       dirs->next = subdir_handler(dirs->next, dirs->sub_dirs);
@@ -34,6 +37,6 @@ int main(int ac, char **av) {
     }
     dirs = dirs->next;
   }
-  memory_handler(&dirs, DIRS_MEM);
+  memory_handler(&head, DIRS_MEM);
   exit(0);
 }

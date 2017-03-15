@@ -4,7 +4,7 @@ void free_files(t_files **files)
 {
   t_files *next;
 
-  while ((*files))
+  while (*files)
   {
     next = (*files)->next;
     free((*files)->name);
@@ -16,7 +16,7 @@ void free_files(t_files **files)
     free((*files)->date.hour);
     free((*files)->date.minute);
     ft_memdel((void *)files);
-    (*files) = next;
+    *files = next;
   }
 }
 
@@ -24,12 +24,12 @@ void free_subdirs(t_dirs **dirs)
 {
   t_dirs *next;
 
-  while ((*dirs))
+  while (*dirs)
   {
     next = (*dirs)->next;
     free((*dirs)->name);
     ft_memdel((void *)dirs);
-    (*dirs) = next;
+    *dirs = next;
   }
 }
 
@@ -37,7 +37,7 @@ void free_dirs(t_dirs **dirs)
 {
   t_dirs *next;
 
-  while ((*dirs))
+  while (*dirs)
   {
     next = (*dirs)->next;
     free((*dirs)->name);
@@ -45,7 +45,7 @@ void free_dirs(t_dirs **dirs)
     free_files(&(*dirs)->self);
     free_subdirs(&(*dirs)->sub_dirs);
     ft_memdel((void *)dirs);
-    (*dirs) = next;
+    *dirs = next;
   }
 }
 

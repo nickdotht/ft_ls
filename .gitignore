@@ -6,3 +6,4 @@ ft_ls.dSYM/
 test/*
 .nfs.*
 *DS_Store
+build

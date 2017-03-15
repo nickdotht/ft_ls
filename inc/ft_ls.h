@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/07 23:40:37 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/14 20:56:41 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+#define MEMCHECK(x) if (!x) exit(2)
 
 #define DIRS_MEM 1
 #define SUBDIRS_MEM 2
@@ -109,5 +111,6 @@ t_dirs *subdir_handler(t_dirs *next, t_dirs *sub_dirs);
 void memory_handler(void *mem_target, int target);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
+void file_sort(t_files **files);
 int has_dirs(t_dirs *dirs);
 #endif

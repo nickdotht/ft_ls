@@ -3,10 +3,8 @@
 t_dirs *new_dir(char *name, int status, int is_default) {
   t_dirs *dir;
 
-  if (!(dir = (t_dirs *)ft_memalloc(sizeof(*dir))))
-    exit(2);
-  if (!(dir->name = ft_strdup(name)))
-    exit(2);
+  MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(*dir))));
+  MEMCHECK((dir->name = ft_strdup(name)));
   dir->status = status;
   dir->format.link = 0;
   dir->format.owner = 0;
