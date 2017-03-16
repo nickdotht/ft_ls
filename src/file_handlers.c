@@ -19,6 +19,8 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
+    (void)dirs;
+    (void)flags;
   format_handler(dirs, f);
   (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
@@ -34,35 +36,34 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
   (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
   (*curr_file)->size = f.st_size;
-  add_date(&(*curr_file)->date, f.st_mtime);
+  add_date(&((*curr_file)->date), f.st_mtime);
   MEMCHECK(((*curr_file)->name = ft_strdup(file_name)));
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
-    set_dir(ft_pathjoin(dir_name, file_name), &(*dirs)->sub_dirs);
+    set_dir(ft_pathjoin(dir_name, file_name), &((*dirs)->sub_dirs));
 }
 
 t_files *file_handler(t_dirs *dirs, t_flags flags) {
   DIR   *dir;
   struct dirent *sd;
   t_files *files;
-  t_files *tmp;
+  t_files **tmp;
 
   if (!(dir = opendir(dirs->name)))
   {
     dirs->is_unreadable = 1;
     return (NULL);
   }
-  MEMCHECK(((files = (t_files *)ft_memalloc(sizeof(t_files)))));
-  tmp = files;
+  files = NULL;
+  tmp = &files;
   while ((sd = readdir(dir)))
   {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
-    add_file(&tmp, &dirs, dirs->name, sd->d_name, flags);
-    MEMCHECK((tmp->next = (t_files *)ft_memalloc(sizeof(t_files))));
-    tmp = tmp->next;
+    MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
+    add_file(tmp, &dirs, dirs->name, sd->d_name, flags);
+    tmp = &((*tmp)->next);
   }
-  tmp->next = NULL;
   closedir(dir);
-  // file_sort(&head);
+  file_sort(&files);
   return (files);
 }

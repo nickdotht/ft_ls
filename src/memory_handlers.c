@@ -20,16 +20,16 @@ void free_files(t_files **files)
   }
 }
 
-void free_subdirs(t_dirs **dirs)
+void free_subdirs(t_dirs **subdirs)
 {
   t_dirs *next;
 
-  while (*dirs)
+  while (*subdirs)
   {
-    next = (*dirs)->next;
-    free((*dirs)->name);
-    ft_memdel((void *)dirs);
-    *dirs = next;
+    next = (*subdirs)->next;
+    free((*subdirs)->name);
+    ft_memdel((void *)subdirs);
+    *subdirs = next;
   }
 }
 
@@ -41,9 +41,8 @@ void free_dirs(t_dirs **dirs)
   {
     next = (*dirs)->next;
     free((*dirs)->name);
-    free_files(&(*dirs)->files);
-    free_files(&(*dirs)->self);
-    free_subdirs(&(*dirs)->sub_dirs);
+    free_files(&((*dirs)->files));
+    free_files(&((*dirs)->self));
     ft_memdel((void *)dirs);
     *dirs = next;
   }

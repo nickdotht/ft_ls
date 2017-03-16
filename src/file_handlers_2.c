@@ -19,10 +19,6 @@ t_files *merge_splitted_files(t_files *a, t_files *b)
   tmp = &res;
   while (1)
   {
-    if (!a->name)
-      a = a->next;
-    if (!b->name)
-      b = b->next;
     if (!a)
     {
       *tmp = b;
