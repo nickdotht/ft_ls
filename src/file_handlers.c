@@ -14,12 +14,8 @@ void add_date(t_date *date, struct stat f) {
   date->unix = (unsigned long long)f.st_mtime;
 }
 
-void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags) {
-  struct stat f;
-
-  if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
-  !((*curr_file)->modes = ft_strnew(10)))
-    exit(2);
+void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct stat f)
+{
   format_handler(dirs, f);
   (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
@@ -37,11 +33,23 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   (*curr_file)->size = f.st_size;
   add_date(&((*curr_file)->date), f);
   MEMCHECK(((*curr_file)->name = ft_strdup(file_name)));
-  if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
-    set_dir(ft_pathjoin(dir_name, file_name), &((*dirs)->sub_dirs));
 }
 
-t_files *file_handler(t_dirs *dirs, t_flags flags) {
+void add_file(t_files **curr_file, t_dirs **dirs, t_dirs *prev_dir, t_dirs *head, char *file_name, t_flags flags)
+{
+  struct stat f;
+  char *dir_name;
+
+  dir_name = (*dirs)->name;
+  if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
+  !((*curr_file)->modes = ft_strnew(10)))
+    exit(2);
+  get_file_info(curr_file, dirs, file_name, f);
+  if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
+    set_dir(ft_pathjoin(dir_name, file_name), &((*dirs)->sub_dirs), head, prev_dir);
+}
+
+t_files *file_handler(t_dirs *dirs, t_dirs *head, t_flags flags) {
   DIR   *dir;
   struct dirent *sd;
   t_files *files;
@@ -59,7 +67,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
-    add_file(tmp, &dirs, dirs->name, sd->d_name, flags);
+    add_file(tmp, &dirs, dirs->prev, head, sd->d_name, flags);
     tmp = &((*tmp)->next);
   }
   closedir(dir);

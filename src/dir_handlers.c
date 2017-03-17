@@ -1,6 +1,7 @@
 #include "ft_ls.h"
 
-t_dirs *new_dir(char *name, int status, int is_default) {
+t_dirs *new_dir(char *name, int status, int is_default, t_dirs *head, t_dirs *tail)
+{
   t_dirs *dir;
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(*dir))));
@@ -14,7 +15,8 @@ t_dirs *new_dir(char *name, int status, int is_default) {
   dir->format.date_day = 2;
   dir->format.date_hour = 2;
   dir->format.date_minute = 2;
-  dir->next = NULL;
+  dir->next = head;
+  dir->prev = tail;
   dir->date.unix = get_dir_date(dir->name);
   dir->is_default = is_default;
   dir->is_unreadable = 0;
@@ -40,38 +42,44 @@ int dir_cmp(const void *a, const void *b)
     return (ft_strcmp(*first, *second));
 }
 
-void set_dir(char *arg, t_dirs **dirs) {
+t_dirs *set_dir(char *arg, t_dirs **dirs, t_dirs *head, t_dirs *tail) {
   t_dirs *new;
   int status;
   struct stat s;
 
   status = IS_DIR;
-  if (lstat(arg, &s) == -1) {
+  if (lstat(arg, &s) == -1)
+  {
     if (ENOENT == errno)
       status = IS_NONEXISTENT;
-  } else {
+  }
+  else
+  {
     if (!S_ISDIR(s.st_mode))
       status = IS_NOTDIR;
   }
-  new = new_dir(arg, status, 0);
-  if (!*dirs || (*dirs)->is_default) {
+  new = new_dir(arg, status, 0, head, tail);
+  if (!*dirs || (*dirs)->is_default)
     *dirs = new;
-  }
-  else {
+  else
     add_dir(dirs, new);
-  }
+  return (*dirs);
 }
 
 t_dirs *dir_handler(char **args, int num_args, t_flags flags) {
   int i;
   t_dirs *dirs;
+  t_dirs *tail;
+  t_dirs *head;
 
   i = -1;
-  dirs = new_dir(".", IS_DIR, 1);
+  dirs = new_dir(".", IS_DIR, 1, NULL);
   if (!(flags & NEWEST_FIRST_SORT_FLAG))
     qsort(args, num_args, sizeof(char *), &dir_cmp);
+  tail = NULL;
+  head = dirs;
   while (args[++i])
-      set_dir(args[i], &dirs);
+      tail = set_dir(args[i], &dirs, head, tail);
   if (flags & NEWEST_FIRST_SORT_FLAG)
     dir_sort(&dirs);
   return (dirs);

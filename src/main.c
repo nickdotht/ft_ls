@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 22:24:17 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 23:45:21 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
   {
     if (dirs->status == IS_DIR)
     {
-      dirs->files = file_handler(dirs, flags);
+      dirs->files = file_handler(dirs, head, flags);
       display_handler(head, dirs, flags, IS_DIR);
       dirs->next = subdir_handler(dirs->next, dirs->sub_dirs);
       if (!is_last_dir(dirs))

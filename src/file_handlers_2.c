@@ -14,7 +14,7 @@ t_files *merge_splitted_files(t_files *a, t_files *b, t_flags flags)
 {
   t_files *res;
   t_files **tmp;
-  int condition;
+  int comparison;
 
   res = NULL;
   tmp = &res;
@@ -30,10 +30,10 @@ t_files *merge_splitted_files(t_files *a, t_files *b, t_flags flags)
       *tmp = a;
       break;
     }
-    condition = (flags & NEWEST_FIRST_SORT_FLAG) ?
+    comparison = (flags & NEWEST_FIRST_SORT_FLAG) ?
       a->date.unix >= b->date.unix :
       ft_strcmp(a->name, b->name) <= 0;
-    move_file(tmp, condition ? &a : &b);
+    move_file(tmp, comparison ? &a : &b);
     tmp = &((*tmp)->next);
   }
   return (res);

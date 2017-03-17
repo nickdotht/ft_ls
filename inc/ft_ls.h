@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 23:00:41 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 23:44:52 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ typedef struct s_dirs {
   int       is_unreadable;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
+  struct s_dirs *prev;
   t_date date;
 } t_dirs;
 
@@ -102,9 +103,9 @@ t_dirs *dir_handler(char **args, int num_args, t_flags flags);
 int flag_handler(char **args, t_flags *flags);
 void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
-t_files *file_handler(t_dirs *dirs, t_flags flags);
-void set_dir(char *arg, t_dirs **dirs);
-void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags);
+t_files *file_handler(t_dirs *dirs, t_dirs *head, t_flags flags);
+t_dirs *set_dir(char *arg, t_dirs **dirs, t_dirs *head, t_dirs *tail);
+void add_file(t_files **curr_file, t_dirs **dirs, t_dirs *prev_dir, char *file_name, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);
