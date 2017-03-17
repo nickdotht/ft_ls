@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/14 20:56:41 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 17:18:52 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ typedef struct s_date {
   char *day;
   char *hour;
   char *minute;
+  int unix;
 } t_date;
 
 typedef struct s_files {
@@ -85,6 +86,7 @@ typedef struct s_dirs {
   int       is_unreadable;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
+  t_date date;
 } t_dirs;
 
 typedef union u_etarget {
@@ -96,11 +98,10 @@ typedef union u_etarget {
 void ft_ls(char *target_dir);
 void get_stat(char *target_dir, char *file, t_format ll_format);
 void help_handler(void);
-t_dirs *dir_handler(char **args, int num_args);
+t_dirs *dir_handler(char **args, int num_args, t_flags flags);
 int flag_handler(char **args, t_flags *flags);
 void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
-void get_dir_info(t_dirs **dirs, t_flags flags);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags);
@@ -113,4 +114,6 @@ int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
 void file_sort(t_files **files);
 int has_dirs(t_dirs *dirs);
+void dir_sort(t_dirs **dirs);
+int get_dir_date(char *dir_name);
 #endif

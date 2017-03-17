@@ -11,6 +11,7 @@ void add_date(t_date *date, time_t val) {
   MEMCHECK((date->hour = ft_strdup(buff)));
   strftime(buff, 200, "%M", localtime(&val));
   MEMCHECK((date->minute = ft_strdup(buff)));
+  date->unix = ctime(val);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_name, t_flags flags) {
@@ -19,8 +20,6 @@ void add_file(t_files **curr_file, t_dirs **dirs, char *dir_name, char *file_nam
   if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
-    (void)dirs;
-    (void)flags;
   format_handler(dirs, f);
   (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';

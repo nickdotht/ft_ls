@@ -15,6 +15,7 @@ t_dirs *new_dir(char *name, int status, int is_default) {
   dir->format.date_hour = 2;
   dir->format.date_minute = 2;
   dir->next = NULL;
+  dir->date.unix = get_dir_date(dir->name);
   dir->is_default = is_default;
   dir->is_unreadable = 0;
   return (dir);
@@ -61,7 +62,7 @@ void set_dir(char *arg, t_dirs **dirs) {
   }
 }
 
-t_dirs *dir_handler(char **args, int num_args) {
+t_dirs *dir_handler(char **args, int num_args, t_flags flags) {
   int i;
   t_dirs *dirs;
 
@@ -70,5 +71,7 @@ t_dirs *dir_handler(char **args, int num_args) {
   qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
       set_dir(args[i], &dirs);
+  if (flags & NEWEST_FIRST_SORT_FLAG)
+    dir_sort(&dirs);
   return (dirs);
 }

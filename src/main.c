@@ -6,25 +6,16 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 14:48:50 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 16:56:16 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_ls.h>
 
-int main(int ac, char **av)
+void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
 {
-  t_flags flags;
-  int     i;
-  t_dirs *head;
-  t_dirs *dirs;
-
-  flags = 0;
-  i = flag_handler(av + 1, &flags);
-  dirs = dir_handler(av + i, ac - i);
   display_handler(NULL, dirs, flags, IS_NONEXISTENT);
   display_handler(NULL, dirs, flags, IS_NOTDIR);
-  head = dirs;
   while (dirs)
   {
     if (dirs->status == IS_DIR)
@@ -37,6 +28,18 @@ int main(int ac, char **av)
     }
     dirs = dirs->next;
   }
-  memory_handler(&head, DIRS_MEM);
+}
+
+int main(int ac, char **av)
+{
+  t_flags flags;
+  int     i;
+  t_dirs *dirs;
+
+  flags = 0;
+  i = flag_handler(av + 1, &flags);
+  dirs = dir_handler(av + i, ac - i);
+  ft_display(dirs, dirs, flags);
+  memory_handler(&dirs, DIRS_MEM);
   exit(0);
 }
