@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 17:18:52 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 23:00:41 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -62,7 +62,7 @@ typedef struct s_date {
   char *day;
   char *hour;
   char *minute;
-  int unix;
+  unsigned long long unix;
 } t_date;
 
 typedef struct s_files {
@@ -112,8 +112,8 @@ t_dirs *subdir_handler(t_dirs *next, t_dirs *sub_dirs);
 void memory_handler(void *mem_target, int target);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
-void file_sort(t_files **files);
+void file_sort(t_files **files, t_flags flags);
 int has_dirs(t_dirs *dirs);
 void dir_sort(t_dirs **dirs);
-int get_dir_date(char *dir_name);
+unsigned long long get_dir_date(char *dir_name);
 #endif

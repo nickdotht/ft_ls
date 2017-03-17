@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 16:56:16 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/16 22:24:17 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int main(int ac, char **av)
 
   flags = 0;
   i = flag_handler(av + 1, &flags);
-  dirs = dir_handler(av + i, ac - i);
+  dirs = dir_handler(av + i, ac - i, flags);
   ft_display(dirs, dirs, flags);
   memory_handler(&dirs, DIRS_MEM);
   exit(0);

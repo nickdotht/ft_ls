@@ -68,7 +68,8 @@ t_dirs *dir_handler(char **args, int num_args, t_flags flags) {
 
   i = -1;
   dirs = new_dir(".", IS_DIR, 1);
-  qsort(args, num_args, sizeof(char *), &dir_cmp);
+  if (!(flags & NEWEST_FIRST_SORT_FLAG))
+    qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
       set_dir(args[i], &dirs);
   if (flags & NEWEST_FIRST_SORT_FLAG)
