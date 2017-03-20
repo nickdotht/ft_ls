@@ -42,10 +42,10 @@ void split_dir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
 
   slow = sourceRef;
   fast = sourceRef->next;
-  while (fast)
+  while (fast && !fast->is_last_dir)
   {
     fast = fast->next;
-    if (fast)
+    if (fast && !fast->is_last_dir)
     {
       slow = slow->next;
       fast = fast->next;

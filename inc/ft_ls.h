@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/16 23:44:52 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/19 16:31:16 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ typedef struct s_dirs {
   t_format format;
   int       is_default;
   int       is_unreadable;
+  int is_last_dir;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
   struct s_dirs *prev;
@@ -105,7 +106,7 @@ void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
 t_files *file_handler(t_dirs *dirs, t_dirs *head, t_flags flags);
 t_dirs *set_dir(char *arg, t_dirs **dirs, t_dirs *head, t_dirs *tail);
-void add_file(t_files **curr_file, t_dirs **dirs, t_dirs *prev_dir, char *file_name, t_flags flags);
+void add_file(t_files **curr_file, t_dirs **dirs, t_dirs *prev_dir, t_dirs *head, char *file_name, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);

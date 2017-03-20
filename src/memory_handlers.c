@@ -24,7 +24,7 @@ void free_subdirs(t_dirs **subdirs)
 {
   t_dirs *next;
 
-  while (*subdirs)
+  while (*subdirs && !(*subdirs)->is_last_dir)
   {
     next = (*subdirs)->next;
     free((*subdirs)->name);
@@ -37,7 +37,7 @@ void free_dirs(t_dirs **dirs)
 {
   t_dirs *next;
 
-  while (*dirs)
+  while (*dirs && !(*dirs)->is_last_dir)
   {
     next = (*dirs)->next;
     free((*dirs)->name);

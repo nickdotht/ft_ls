@@ -20,6 +20,9 @@ t_dirs *new_dir(char *name, int status, int is_default, t_dirs *head, t_dirs *ta
   dir->date.unix = get_dir_date(dir->name);
   dir->is_default = is_default;
   dir->is_unreadable = 0;
+  if (tail)
+    tail->is_last_dir = 0;
+  dir->is_last_dir = 1;
   return (dir);
 }
 
@@ -29,7 +32,7 @@ void add_dir(t_dirs **dirs, t_dirs *new) {
 
 	tmp = *dirs;
 	head = tmp;
-  while (tmp->next)
+  while (tmp && !tmp->is_last_dir)
   		tmp = tmp->next;
 	tmp->next = new;
 	*dirs = head;
@@ -73,7 +76,7 @@ t_dirs *dir_handler(char **args, int num_args, t_flags flags) {
   t_dirs *head;
 
   i = -1;
-  dirs = new_dir(".", IS_DIR, 1, NULL);
+  dirs = new_dir(".", IS_DIR, 1, NULL, NULL);
   if (!(flags & NEWEST_FIRST_SORT_FLAG))
     qsort(args, num_args, sizeof(char *), &dir_cmp);
   tail = NULL;
