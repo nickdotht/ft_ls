@@ -46,7 +46,7 @@ void dir_files_display(t_format format, t_files *files) {
 }
 
 void dir_display(t_dirs *head, t_dirs *dirs) {
-  if (!is_only_dir(head)) {
+  if (!is_only_dir(head) && !dirs->is_unreadable) {
     printf("%s:\n", dirs->name);
   }
   if (!dirs->is_unreadable)
