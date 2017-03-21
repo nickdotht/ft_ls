@@ -5,7 +5,7 @@ int is_last_dir(t_dirs *dirs)
   t_dirs *tmp;
 
   tmp = dirs->next;
-  while (tmp && !tmp->is_last_dir)
+  while (tmp)
   {
     if (tmp->status == IS_DIR)
       return (0);
@@ -19,7 +19,7 @@ int is_last_nondir(t_dirs *dirs)
   t_dirs *tmp;
 
   tmp = dirs->next;
-  while (tmp && !tmp->is_last_dir)
+  while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
       return (0);
@@ -33,7 +33,7 @@ int has_dirs(t_dirs *dirs)
   t_dirs *tmp;
 
   tmp = dirs;
-  while (tmp && !tmp->is_last_dir)
+  while (tmp)
   {
     if (tmp->status == IS_DIR)
       return (1);
@@ -49,9 +49,10 @@ int is_only_dir(t_dirs *head)
 
   tmp = head;
   count = 0;
-  while (tmp && !tmp->is_last_dir)
+  while (tmp)
   {
-      count++;
+      if (!tmp->is_unreadable)
+        count++;
       tmp = tmp->next;
   }
   return (count > 1 ? 0 : 1);

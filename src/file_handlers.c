@@ -11,7 +11,7 @@ void add_date(t_date *date, struct stat f) {
   MEMCHECK((date->hour = ft_strdup(buff)));
   strftime(buff, 200, "%M", localtime(&(f.st_mtime)));
   MEMCHECK((date->minute = ft_strdup(buff)));
-  date->unix = (unsigned long long)f.st_mtime;
+  date->unix_format = (unsigned long long)f.st_mtime;
 }
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct stat f)
@@ -35,21 +35,21 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct s
   MEMCHECK(((*curr_file)->name = ft_strdup(file_name)));
 }
 
-void add_file(t_files **curr_file, t_dirs **dirs, t_dirs *prev_dir, t_dirs *head, char *file_name, t_flags flags)
+void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
 {
   struct stat f;
   char *dir_name;
 
   dir_name = (*dirs)->name;
-  if (lstat(!dir_name ? file_name : ft_pathjoin(dir_name, file_name), &f) < 0 ||
+  if (lstat(!dir_name || ft_strcmp(dir_name, (*dirs)->name) == 0 ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
-  get_file_info(curr_file, dirs, file_name, f);
+  get_file_info(curr_file, dirs, (*curr_file)->name, f);
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
-    set_dir(ft_pathjoin(dir_name, file_name), &((*dirs)->sub_dirs), head, prev_dir);
+    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*dirs)->prev);
 }
 
-t_files *file_handler(t_dirs *dirs, t_dirs *head, t_flags flags) {
+t_files *file_handler(t_dirs *dirs, t_flags flags) {
   DIR   *dir;
   struct dirent *sd;
   t_files *files;
@@ -67,7 +67,8 @@ t_files *file_handler(t_dirs *dirs, t_dirs *head, t_flags flags) {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
-    add_file(tmp, &dirs, dirs->prev, head, sd->d_name, flags);
+    (*tmp)->name = sd->d_name;
+    add_file(tmp, &dirs, flags);
     tmp = &((*tmp)->next);
   }
   closedir(dir);

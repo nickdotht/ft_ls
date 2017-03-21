@@ -31,7 +31,7 @@ t_files *merge_splitted_files(t_files *a, t_files *b, t_flags flags)
       break;
     }
     comparison = (flags & NEWEST_FIRST_SORT_FLAG) ?
-      a->date.unix >= b->date.unix :
+      a->date.unix_format >= b->date.unix_format :
       ft_strcmp(a->name, b->name) <= 0;
     move_file(tmp, comparison ? &a : &b);
     tmp = &((*tmp)->next);

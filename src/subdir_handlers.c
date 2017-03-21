@@ -45,10 +45,10 @@ void split_subdir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
 
   slow = sourceRef;
   fast = sourceRef->next;
-  while (fast  && !fast->is_last_dir)
+  while (fast)
   {
     fast = fast->next;
-    if (fast && !fast->is_last_dir)
+    if (fast)
     {
       slow = slow->next;
       fast = fast->next;
@@ -83,7 +83,7 @@ t_dirs *subdir_handler(t_dirs *next, t_dirs *sub_dirs)
   }
   subdir_sort(&sub_dirs);
   tmp = sub_dirs;
-  while (tmp && !tmp->is_last_dir) {
+  while (tmp) {
     tmp = tmp->next;
   }
   tmp->next = next;

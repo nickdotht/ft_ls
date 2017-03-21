@@ -7,6 +7,7 @@ void move_dir(t_dirs **destRef, t_dirs **sourceRef)
   new = *sourceRef;
   *sourceRef = (*sourceRef)->next;
   new->next = *destRef;
+  new->prev = NULL;
   *destRef = new;
 }
 
@@ -29,7 +30,7 @@ t_dirs *merge_splitted_dirs(t_dirs *a, t_dirs *b)
       *tmp = a;
       break;
     }
-    move_dir(tmp, a->date.unix >= b->date.unix ? &a : &b);
+    move_dir(tmp, a->date.unix_format >= b->date.unix_format ? &a : &b);
     tmp = &((*tmp)->next);
   }
   return (res);
@@ -42,10 +43,10 @@ void split_dir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
 
   slow = sourceRef;
   fast = sourceRef->next;
-  while (fast && !fast->is_last_dir)
+  while (fast)
   {
     fast = fast->next;
-    if (fast && !fast->is_last_dir)
+    if (fast)
     {
       slow = slow->next;
       fast = fast->next;
@@ -61,7 +62,7 @@ unsigned long long get_dir_date(char *dir_name)
   struct stat f;
 
   if (lstat(dir_name, &f) < 0)
-    exit(2);
+    return (0);
   return ((unsigned long long)f.st_mtime);
 }
 

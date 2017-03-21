@@ -22,12 +22,13 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
 
   tmp = dirs;
   should_separate = has_dirs(dirs);
-  while (tmp && !tmp->is_last_dir)
+  while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
     {
       MEMCHECK((tmp->self = (t_files *)ft_memalloc(sizeof(t_files))));
-      add_file(&tmp->self, &tmp, NULL, NULL, tmp->name, flags);
+      tmp->self->name = tmp->name;
+      add_file(&tmp->self, &tmp, flags);
       long_listing_display(dirs->format, tmp->self);
       if (is_last_nondir(tmp) && should_separate)
         printf("\n");
@@ -61,7 +62,7 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   if (target == IS_NONEXISTENT)
   {
     tmp = dirs;
-    while (tmp && !tmp->is_last_dir) {
+    while (tmp) {
       if (tmp->status == IS_NONEXISTENT)
       {
         MEMCHECK((etarget.file = ft_strdup(tmp->name)));
