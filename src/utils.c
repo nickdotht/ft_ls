@@ -7,7 +7,7 @@ int is_last_dir(t_dirs *dirs)
   tmp = dirs->next;
   while (tmp)
   {
-    if (tmp->status == IS_DIR)
+    if (tmp->status == IS_DIR && tmp->is_unreadable)
       return (0);
     tmp = tmp->next;
   }
