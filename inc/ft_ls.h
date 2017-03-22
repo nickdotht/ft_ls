@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/19 16:31:16 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/21 22:28:56 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ typedef union u_etarget {
 
 
 void ft_ls(char *target_dir);
-void get_stat(char *target_dir, char *file, t_format ll_format);
 void help_handler(void);
 t_dirs *dir_handler(char **args, int num_args, t_flags flags);
 int flag_handler(char **args, t_flags *flags);

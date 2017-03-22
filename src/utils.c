@@ -7,7 +7,7 @@ int is_last_dir(t_dirs *dirs)
   tmp = dirs->next;
   while (tmp)
   {
-    if (tmp->status == IS_DIR && tmp->is_unreadable)
+    if (tmp->status == IS_DIR)
       return (0);
     tmp = tmp->next;
   }
@@ -42,18 +42,18 @@ int has_dirs(t_dirs *dirs)
   return (0);
 }
 
-int is_only_dir(t_dirs *head)
-{
-  t_dirs *tmp;
-  int count;
-
-  tmp = head;
-  count = 0;
-  while (tmp)
-  {
-      if (!tmp->is_unreadable)
-        count++;
-      tmp = tmp->next;
-  }
-  return (count > 1 ? 0 : 1);
-}
+// int is_only_dir(t_dirs *head)
+// {
+//   t_dirs *tmp;
+//   int count;
+//
+//   tmp = head;
+//   count = 0;
+//   while (tmp)
+//   {
+//       if (tmp->status == IS_DIR)
+//         count++;
+//       tmp = tmp->next;
+//   }
+//   return (count > 1 ? 0 : 1);
+// }
