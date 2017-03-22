@@ -41,7 +41,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
   char *dir_name;
 
   dir_name = (*dirs)->name;
-  if (lstat(!dir_name || ft_strcmp(dir_name, (*dirs)->name) == 0 ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
+  if (lstat(!dir_name ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
   get_file_info(curr_file, dirs, (*curr_file)->name, f);

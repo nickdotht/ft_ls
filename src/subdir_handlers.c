@@ -7,6 +7,7 @@ void move_subdir(t_dirs **destRef, t_dirs **sourceRef)
   new = *sourceRef;
   *sourceRef = (*sourceRef)->next;
   new->next = *destRef;
+  new->prev = NULL;
   *destRef = new;
 }
 
@@ -59,33 +60,33 @@ void split_subdir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
   slow->next = NULL;
 }
 
-void subdir_sort(t_dirs **files)
+void subdir_sort(t_dirs **sub_dirs)
 {
   t_dirs *head;
   t_dirs *a;
   t_dirs *b;
 
-  head = *files;
+  head = *sub_dirs;
   if (!head || !head->next)
     return ;
   split_subdir(head, &a, &b);
   subdir_sort(&a);
   subdir_sort(&b);
-  *files = merge_splitted_subdirs(a, b);
+  *sub_dirs = merge_splitted_subdirs(a, b);
 }
 
-t_dirs *subdir_handler(t_dirs *next, t_dirs *sub_dirs)
+t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs)
 {
   t_dirs *tmp;
 
-  if (!sub_dirs) {
+  if (!*sub_dirs) {
     return next;
   }
-  subdir_sort(&sub_dirs);
-  tmp = sub_dirs;
-  while (tmp) {
+  subdir_sort(sub_dirs);
+  tmp = *sub_dirs;
+  while (tmp->next) {
     tmp = tmp->next;
   }
   tmp->next = next;
-  return (sub_dirs);
+  return (*sub_dirs);
 }

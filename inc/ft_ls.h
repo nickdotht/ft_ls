@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/21 22:28:56 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/21 23:09:07 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);
-t_dirs *subdir_handler(t_dirs *next, t_dirs *sub_dirs);
+t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs);
 void memory_handler(void *mem_target, int target);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
