@@ -35,11 +35,23 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   }
 }
 
-void dir_files_display(t_format format, t_files *files) {
-  while (files)
+void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
+{
+  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
+  display_handler(NULL, dirs, flags, IS_NOTDIR);
+  while (dirs)
   {
-    long_listing_display(format, files);
-    files = files->next;
+    if (dirs->status == IS_DIR)
+    {
+      dirs->files = file_handler(dirs, flags);
+      if (flags & REVERSE_FLAG)
+        reverse_files(&dirs->files);
+      display_handler(head, dirs, flags, IS_DIR);
+      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs));
+      if (!is_last_dir(dirs))
+        printf("\n");
+    }
+    dirs = dirs->next;
   }
 }
 
@@ -48,7 +60,13 @@ void dir_display(t_dirs *head, t_dirs *dirs) {
     printf("%s:\n", dirs->name);
   }
   if (!dirs->is_unreadable)
-    dir_files_display(dirs->format, dirs->files);
+  {
+    while (dirs->files)
+    {
+      long_listing_display(dirs->format, dirs->files);
+      dirs->files = dirs->files->next;
+    }
+  }
   else
     printf("ft_ls: %s: Permission denied\n", dirs->name);
 }

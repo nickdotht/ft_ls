@@ -1,4 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   file_handlers.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
+/*   Updated: 2017/03/27 16:20:59 by jrameau          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_ls.h"
+
+void reverse_files(t_files **files)
+{
+  t_files *curr;
+  t_files *next;
+  t_files *prev;
+
+  prev = NULL;
+  curr = *files;
+  while (curr)
+  {
+    next = curr->next;
+    curr->next = prev;
+    prev = curr;
+    curr = next;
+  }
+  *files = prev;
+}
 
 void add_date(t_date *date, struct stat f) {
   char buff[200];
@@ -46,7 +76,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
     exit(2);
   get_file_info(curr_file, dirs, (*curr_file)->name, f);
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
-    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*dirs)->prev);
+    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
 
 t_files *file_handler(t_dirs *dirs, t_flags flags) {

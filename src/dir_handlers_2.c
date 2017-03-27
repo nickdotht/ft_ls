@@ -6,9 +6,7 @@ void move_dir(t_dirs **destRef, t_dirs **sourceRef)
 
   new = *sourceRef;
   *sourceRef = (*sourceRef)->next;
-  (*destRef)->prev = new;
   new->next = *destRef;
-  new->prev = NULL;
   *destRef = new;
 }
 
@@ -58,13 +56,22 @@ void split_dir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
   slow->next = NULL;
 }
 
-unsigned long long get_dir_date(char *dir_name)
+void reverse_dirs(t_dirs **dirs)
 {
-  struct stat f;
+  t_dirs *curr;
+  t_dirs *next;
+  t_dirs *prev;
 
-  if (lstat(dir_name, &f) < 0)
-    return (0);
-  return ((unsigned long long)f.st_mtime);
+  prev = NULL;
+  curr = *dirs;
+  while (curr)
+  {
+    next = curr->next;
+    curr->next = prev;
+    prev = curr;
+    curr = next;
+  }
+  *dirs = prev;
 }
 
 void dir_sort(t_dirs **dirs)
