@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jrameau <jrameau@student.42.fr>            +#+  +:+       +#+         #
+#    By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/12/13 11:43:23 by jrameau           #+#    #+#              #
-#    Updated: 2017/03/04 13:30:01 by jrameau          ###   ########.fr        #
+#    Updated: 2017/03/27 12:44:56 by jrameau          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,9 @@ CC = gcc
 OPFLAGS = -O3 -funroll-loops
 CFLAGS = -Wall -Werror -Wextra
 
+# Debugging flags
+DEBUG = -g
+
 # Main rule
 all: $(BUILDDIR) $(LIBFT) $(NAME)
 
@@ -40,7 +43,7 @@ $(BUILDDIR):
 
 # Objects rule
 $(BUILDDIR)%.o:$(SRCDIR)%.c
-	$(CC) $(CFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
+	$(CC) $(DEBUG) $(CFLAGS) -I$(LIBINC) -I$(INC) -o $@ -c $<
 
 # Project file rule
 $(NAME): $(BUILDOBJS)

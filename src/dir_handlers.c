@@ -5,7 +5,15 @@ t_dirs *new_dir(char *name, int status, int is_default, t_dirs *tail)
   t_dirs *dir;
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(*dir))));
-  MEMCHECK((dir->name = ft_strdup(name)));
+  if (status != IS_NOTDIR)
+  {
+    MEMCHECK((dir->name = ft_strdup(name)));
+  }
+  else
+  {
+    MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
+    MEMCHECK((dir->self->name = ft_strdup(name)));  
+  }
   dir->format.date_month = 3;
   dir->format.date_day = 2;
   dir->format.date_hour = 2;

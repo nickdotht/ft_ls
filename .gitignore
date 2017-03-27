@@ -7,3 +7,4 @@ test/*
 .nfs.*
 *DS_Store
 build
+*.json
