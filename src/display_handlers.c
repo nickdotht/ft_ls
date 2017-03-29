@@ -56,11 +56,11 @@ void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
 }
 
 void dir_display(t_dirs *head, t_dirs *dirs) {
-  if (head->next) {
+  if (head->next)
     printf("%s:\n", dirs->name);
-  }
   if (!dirs->is_unreadable)
   {
+    printf("total %d\n", dirs->total_blocks);
     while (dirs->files)
     {
       long_listing_display(dirs->format, dirs->files);

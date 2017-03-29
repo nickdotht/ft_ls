@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/28 16:41:24 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/28 21:14:13 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@
 #define IS_NONEXISTENT 1
 #define IS_NOTDIR 2
 #define IS_DIR 4
+
+#define ISUSR 1
+#define ISGRP 2
+#define ISOTH 4
 
 typedef struct s_format {
   int link;
@@ -84,6 +88,7 @@ typedef struct s_dirs {
   t_format format;
   int       is_default;
   int       is_unreadable;
+  int       total_blocks;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
   t_date date;
@@ -118,4 +123,5 @@ void reverse_files(t_files **files);
 void reverse_dirs(t_dirs **dirs);
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags);
 char get_file_entry_type(int mode);
+char third_file_mode_handler(int mode, int userType);
 #endif

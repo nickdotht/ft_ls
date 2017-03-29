@@ -46,7 +46,7 @@ int has_dirs(t_dirs *dirs)
 // {
 //   t_dirs *tmp;
 //   int count;
-//
+
 //   tmp = head;
 //   count = 0;
 //   while (tmp)

@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/28 16:34:46 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/28 21:18:27 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,13 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct s
   (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
   (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
-  (*curr_file)->modes[3] = (f.st_mode & S_IXUSR) ? 'x' : '-';
+  (*curr_file)->modes[3] = third_file_mode_handler(f.st_mode, ISUSR);
   (*curr_file)->modes[4] = (f.st_mode & S_IRGRP) ? 'r' : '-';
   (*curr_file)->modes[5] = (f.st_mode & S_IWGRP) ? 'w' : '-';
-  (*curr_file)->modes[6] = (f.st_mode & S_IXGRP) ? 'x' : '-';
+  (*curr_file)->modes[6] = third_file_mode_handler(f.st_mode, ISGRP);
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
-  (*curr_file)->modes[9] = (f.st_mode & S_IXOTH) ? 'x' : '-';
+  (*curr_file)->modes[9] = third_file_mode_handler(f.st_mode, ISOTH);
   (*curr_file)->link = f.st_nlink;
   (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
   (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
@@ -75,6 +75,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
   !((*curr_file)->modes = ft_strnew(10)))
     exit(2);
   get_file_info(curr_file, dirs, (*curr_file)->name, f);
+  (*dirs)->total_blocks += f.st_blocks;
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
@@ -92,6 +93,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   }
   files = NULL;
   tmp = &files;
+  dirs->total_blocks = 0;
   while ((sd = readdir(dir)))
   {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
