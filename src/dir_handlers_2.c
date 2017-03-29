@@ -35,7 +35,7 @@ t_dirs *merge_splitted_dirs(t_dirs *a, t_dirs *b)
   return (res);
 }
 
-void split_dir(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
+void split_dirs(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
 {
   t_dirs *slow;
   t_dirs *fast;
@@ -83,7 +83,7 @@ void dir_sort(t_dirs **dirs)
   head = *dirs;
   if (!head || !head->next)
     return ;
-  split_dir(head, &a, &b);
+  split_dirs(head, &a, &b);
   dir_sort(&a);
   dir_sort(&b);
   *dirs = merge_splitted_dirs(a, b);
