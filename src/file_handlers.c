@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/27 16:20:59 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/28 16:34:46 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void add_date(t_date *date, struct stat f) {
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct stat f)
 {
   format_handler(dirs, f);
-  (*curr_file)->modes[0] = (S_ISDIR(f.st_mode)) ? 'd' : '-';
+  (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
   (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
   (*curr_file)->modes[3] = (f.st_mode & S_IXUSR) ? 'x' : '-';

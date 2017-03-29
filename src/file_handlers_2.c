@@ -1,5 +1,23 @@
 #include "ft_ls.h"
 
+char get_file_entry_type(int mode)
+{
+  if (S_ISBLK(mode))
+    return ('b');
+  else if (S_ISCHR(mode))
+    return ('c');
+  else if (S_ISDIR(mode))
+    return ('d');
+  else if (S_ISLNK(mode))
+    return ('l');
+  else if (S_ISSOCK(mode))
+    return ('s');
+  else if (S_ISFIFO(mode))
+    return ('p');
+  else
+    return ('-');
+}
+
 void move_file(t_files **destRef, t_files **sourceRef)
 {
   t_files *new;

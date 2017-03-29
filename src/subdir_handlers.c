@@ -7,7 +7,6 @@ void move_subdir(t_dirs **destRef, t_dirs **sourceRef)
   new = *sourceRef;
   *sourceRef = (*sourceRef)->next;
   new->next = *destRef;
-  new->prev = NULL;
   *destRef = new;
 }
 

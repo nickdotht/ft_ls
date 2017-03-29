@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/27 16:45:50 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/28 16:41:24 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,4 +117,5 @@ void dir_sort(t_dirs **dirs);
 void reverse_files(t_files **files);
 void reverse_dirs(t_dirs **dirs);
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags);
+char get_file_entry_type(int mode);
 #endif
