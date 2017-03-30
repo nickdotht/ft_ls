@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 02:02:14 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 03:35:31 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ typedef struct s_format {
   int date_year;
   int user_id;
   int group_id;
+  int major;
+  int minor;
 } t_format;
 
 typedef enum e_flags {
@@ -80,14 +82,19 @@ typedef struct s_date {
 
 typedef struct s_files {
   char *modes;
-  long int link;
+  long link;
   char *owner;
   unsigned int user_id;
   char *group;
   unsigned int group_id;
-  long int size;
+  long size;
   t_date date;
   char *name;
+  long major;
+  long minor;
+  int is_chr_or_blk;
+  int is_link;
+  char *linked_to;
   struct s_files *next;
 } t_files;
 
@@ -103,6 +110,7 @@ typedef struct s_dirs {
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
   t_date date;
+  int has_chr_or_blk;
 } t_dirs;
 
 typedef union u_etarget {

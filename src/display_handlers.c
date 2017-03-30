@@ -18,7 +18,7 @@ void date_display_handler(t_format format, t_date date)
   }
 }
 
-void long_listing_display(t_format format, t_files *file, t_flags flags) {
+void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_flags flags) {
   printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
   if (file->owner && !(flags & DISPLAY_UID_AND_GID))
@@ -28,12 +28,18 @@ void long_listing_display(t_format format, t_files *file, t_flags flags) {
   if (file->group && !(flags & DISPLAY_UID_AND_GID))
     printf("%-*s  ", format.group, file->group);
   else
-    printf("%-*d  ", format.group_id, file->group_id); 
-  printf("%*ld ", format.fileSize, file->size);
+    printf("%-*d  ", format.group_id, file->group_id);
+  if (file->is_chr_or_blk)
+    printf(" %*ld, %*ld ", format.major, file->major, format.minor, file->minor);
+  else
+    printf("%*ld ", has_chr_or_blk ? format.major + format.minor + format.fileSize + 2 : format.fileSize, file->size);
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
   date_display_handler(format, file->date);
-  printf("%s\n", file->name);
+  printf("%s", file->name);
+  if (file->is_link)
+    printf(" -> %s", file->linked_to);
+  printf("\n");
 }
 
 // void column_display(t_dirs *dirs, t_flags flags, t_status target) {
@@ -50,7 +56,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
     if (tmp->status == IS_NOTDIR)
     {
       add_file(&tmp->self, &tmp, flags);
-      long_listing_display(dirs->format, tmp->self, flags);
+      long_listing_display(dirs->format, tmp->self, tmp->has_chr_or_blk, flags);
       if (is_last_nondir(tmp) && should_separate)
         printf("\n");
     }
@@ -66,7 +72,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
     printf("total %d\n", dirs->total_blocks);
     while (dirs->files)
     {
-      long_listing_display(dirs->format, dirs->files, flags);
+      long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
       dirs->files = dirs->files->next;
     }
   }

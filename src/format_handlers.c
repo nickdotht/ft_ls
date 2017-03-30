@@ -13,4 +13,8 @@ void format_handler(t_dirs **dir, t_files *file) {
     (*dir)->format.user_id = ft_intlen(file->user_id);
   if ((*dir)->format.group_id < ft_intlen(file->group_id))
     (*dir)->format.group_id = ft_intlen(file->group_id);
+  if ((*dir)->format.major < ft_intlen(file->major))
+    (*dir)->format.major = ft_intlen(file->major);
+  if ((*dir)->format.minor < ft_intlen(file->minor))
+    (*dir)->format.minor = ft_intlen(file->minor);
 }

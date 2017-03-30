@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 01:30:24 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 03:44:32 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ char extended_attributes_handler(char *file_path)
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct stat f)
 {
+  char buff[200];
+
   (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
   (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
@@ -68,6 +70,19 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
   (*curr_file)->user_id = (int)f.st_uid;
   (*curr_file)->group_id = (int)f.st_gid;
   (*curr_file)->size = f.st_size;
+  if (S_ISCHR(f.st_mode) || S_ISBLK(f.st_mode))
+  {
+    (*curr_file)->major = (long)major(f.st_rdev);
+    (*curr_file)->minor = (long)minor(f.st_rdev);
+    (*curr_file)->is_chr_or_blk = 1;
+    (*dirs)->has_chr_or_blk = 1;
+  }
+  if (S_ISLNK(f.st_mode))
+  {
+    (*curr_file)->is_link = 1;
+    readlink(file_path, buff, 200);
+    (*curr_file)->linked_to = ft_strdup(buff);
+  }
   file_modification_date_handler(&((*curr_file)->date), f);
   format_handler(dirs, *curr_file);
 }
