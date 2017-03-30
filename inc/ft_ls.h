@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 21:21:18 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 23:47:22 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <sys/xattr.h>
 #include <sys/acl.h>
+#include <sys/time.h>
 
 #define MEMCHECK(x) if (!x) exit(2)
 
@@ -53,6 +54,7 @@ typedef struct s_format {
   int date_day;
   int date_hour;
   int date_minute;
+  int date_year;
 } t_format;
 
 typedef enum e_flags {
@@ -68,8 +70,9 @@ typedef struct s_date {
   char *day;
   char *hour;
   char *minute;
-  unsigned long long ms;
-  unsigned long long ns;
+  char *year;
+  unsigned long long tv_sec;
+  unsigned long long tv_nsec;
 } t_date;
 
 typedef struct s_files {

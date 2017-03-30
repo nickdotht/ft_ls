@@ -17,9 +17,9 @@ void handle_dir_merge_comparison(t_dirs **a, t_dirs **b, t_dirs **tmp, t_flags f
   comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
   if (flags & NEWEST_FIRST_SORT_FLAG)
   {
-    comparison = (*a)->date.ms >= (*b)->date.ms;
-    if ((*a)->date.ms == (*b)->date.ms)
-      comparison = (*a)->date.ns >= (*b)->date.ns;
+    comparison = (*a)->date.tv_sec >= (*b)->date.tv_sec;
+    if ((*a)->date.tv_sec == (*b)->date.tv_sec)
+      comparison = (*a)->date.tv_nsec >= (*b)->date.tv_nsec;
   }
   move_dir(tmp, comparison ? a : b);
 }

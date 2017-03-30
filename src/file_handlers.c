@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 21:14:28 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 23:00:16 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ void file_modification_date_handler(t_date *date, struct stat f) {
   MEMCHECK((date->hour = ft_strdup(buff)));
   strftime(buff, 200, "%M", localtime(&(f.st_mtime)));
   MEMCHECK((date->minute = ft_strdup(buff)));
+  strftime(buff, 200, "%Y", localtime(&(f.st_mtime)));
+  MEMCHECK((date->year = ft_strdup(buff)));
   date->ms = (unsigned long long)f.st_mtime;
   date->ns = (unsigned long long)f.st_mtimespec.tv_nsec;
 }

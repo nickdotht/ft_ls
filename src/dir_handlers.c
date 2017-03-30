@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 21:23:25 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 23:48:10 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,11 @@ t_dirs *new_dir(char *name, int status, int is_default)
   dir->format.date_day = 2;
   dir->format.date_hour = 2;
   dir->format.date_minute = 2;
+  dir->format.date_year = 5;
   dir->status = status;
   dir->next = NULL;
-  dir->date.ms = (unsigned long long)f.st_mtime;
-  dir->date.ns = (unsigned long long)f.st_mtimespec.tv_nsec;
+  dir->date.tv_sec = (unsigned long long)f.st_mtime;
+  dir->date.tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
   dir->is_default = is_default;
   dir->is_unreadable = 0;
   return (dir);

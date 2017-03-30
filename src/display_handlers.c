@@ -1,5 +1,23 @@
 #include "ft_ls.h"
 
+void date_display_handler(t_format format, t_date date)
+{
+  struct timeval tp;
+  unsigned long long curr_date;
+  unsigned long long six_months;
+
+  gettimeofday(&tp, NULL);
+  curr_date = (unsigned long long)tp.tv_sec;
+  six_months = 15778476;
+  if (date.tv_sec < (curr_date - six_months) || date.tv_sec > (curr_date + six_months))
+    printf("%*s ", format.date_year, date.year);
+  else
+  {
+    printf("%*s:", format.date_hour, date.hour);
+    printf("%*s ", format.date_minute, date.minute);
+  }
+}
+
 void long_listing_display(t_format format, t_files *file) {
   printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
@@ -8,8 +26,7 @@ void long_listing_display(t_format format, t_files *file) {
   printf("%*ld ", format.fileSize, file->size);
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
-  printf("%*s:", format.date_hour, file->date.hour);
-  printf("%*s ", format.date_minute, file->date.minute);
+  date_display_handler(format, file->date);
   printf("%s\n", file->name);
 }
 
@@ -32,26 +49,6 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
         printf("\n");
     }
     tmp = tmp->next;
-  }
-}
-
-void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
-{
-  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
-  display_handler(NULL, dirs, flags, IS_NOTDIR);
-  while (dirs)
-  {
-    if (dirs->status == IS_DIR)
-    {
-      dirs->files = file_handler(dirs, flags);
-      if (flags & REVERSE_FLAG)
-        reverse_files(&dirs->files);
-      display_handler(head, dirs, flags, IS_DIR);
-      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs), flags);
-      if (!is_last_dir(dirs))
-        printf("\n");
-    }
-    dirs = dirs->next;
   }
 }
 
@@ -93,3 +90,24 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
     dir_display(head, dirs);
 }// if (!(flags & LONG_LISTING_FLAG))
 //   return column_display(dirs, flags, target);
+
+
+void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
+{
+  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
+  display_handler(NULL, dirs, flags, IS_NOTDIR);
+  while (dirs)
+  {
+    if (dirs->status == IS_DIR)
+    {
+      dirs->files = file_handler(dirs, flags);
+      if (flags & REVERSE_FLAG)
+        reverse_files(&dirs->files);
+      display_handler(head, dirs, flags, IS_DIR);
+      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs), flags);
+      if (!is_last_dir(dirs))
+        printf("\n");
+    }
+    dirs = dirs->next;
+  }
+}
