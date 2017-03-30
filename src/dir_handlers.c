@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/28 21:58:32 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 21:23:25 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ t_dirs *new_dir(char *name, int status, int is_default)
   dir->format.date_minute = 2;
   dir->status = status;
   dir->next = NULL;
-  dir->date.unix_format = (unsigned long long)f.st_mtime;
+  dir->date.ms = (unsigned long long)f.st_mtime;
+  dir->date.ns = (unsigned long long)f.st_mtimespec.tv_nsec;
   dir->is_default = is_default;
   dir->is_unreadable = 0;
   return (dir);
@@ -53,11 +54,22 @@ void add_dir(t_dirs **dirs, t_dirs *new) {
 	*dirs = head;
 }
 
-int dir_cmp(const void *a, const void *b)
+void reverse_dirs(t_dirs **dirs)
 {
-    char * const *first = a;
-    char * const *second = b;
-    return (ft_strcmp(*first, *second));
+  t_dirs *curr;
+  t_dirs *next;
+  t_dirs *prev;
+
+  prev = NULL;
+  curr = *dirs;
+  while (curr)
+  {
+    next = curr->next;
+    curr->next = prev;
+    prev = curr;
+    curr = next;
+  }
+  *dirs = prev;
 }
 
 void set_dir(char *arg, t_dirs **dirs) {
@@ -83,17 +95,14 @@ void set_dir(char *arg, t_dirs **dirs) {
     add_dir(dirs, new);
 }
 
-t_dirs *dir_handler(char **args, int num_args, t_flags flags) {
+t_dirs *dir_handler(char **args, t_flags flags) {
   int i;
   t_dirs *dirs;
 
   i = -1;
   dirs = new_dir(".", IS_DIR, 1);
-  if (!(flags & NEWEST_FIRST_SORT_FLAG))
-    qsort(args, num_args, sizeof(char *), &dir_cmp);
   while (args[++i])
       set_dir(args[i], &dirs);
-  if (flags & NEWEST_FIRST_SORT_FLAG)
-    dir_sort(&dirs);
+  dir_sort(&dirs, flags);
   return (dirs);
 }

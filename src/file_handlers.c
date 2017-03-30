@@ -6,31 +6,13 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/28 21:18:27 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 21:14:28 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void reverse_files(t_files **files)
-{
-  t_files *curr;
-  t_files *next;
-  t_files *prev;
-
-  prev = NULL;
-  curr = *files;
-  while (curr)
-  {
-    next = curr->next;
-    curr->next = prev;
-    prev = curr;
-    curr = next;
-  }
-  *files = prev;
-}
-
-void add_date(t_date *date, struct stat f) {
+void file_modification_date_handler(t_date *date, struct stat f) {
   char buff[200];
 
   strftime(buff, 200, "%b", localtime(&(f.st_mtime)));
@@ -41,10 +23,31 @@ void add_date(t_date *date, struct stat f) {
   MEMCHECK((date->hour = ft_strdup(buff)));
   strftime(buff, 200, "%M", localtime(&(f.st_mtime)));
   MEMCHECK((date->minute = ft_strdup(buff)));
-  date->unix_format = (unsigned long long)f.st_mtime;
+  date->ms = (unsigned long long)f.st_mtime;
+  date->ns = (unsigned long long)f.st_mtimespec.tv_nsec;
 }
 
-void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct stat f)
+char extended_attributes_handler(char *file_path)
+{
+  char res;
+  acl_t acl;
+  acl_entry_t entry;
+
+  res = ' ';
+  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0 && opendir(file_path))
+    return ('@');
+  acl = acl_get_link_np(file_path, ACL_TYPE_EXTENDED);
+  if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
+  {
+    acl_free(acl);
+    acl = NULL;
+  }
+  if (acl)
+    res = '+';
+  return (res);
+}
+
+void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct stat f)
 {
   format_handler(dirs, f);
   (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
@@ -57,12 +60,12 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_name, struct s
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
   (*curr_file)->modes[9] = third_file_mode_handler(f.st_mode, ISOTH);
+  (*curr_file)->modes[10] = extended_attributes_handler(file_path);
   (*curr_file)->link = f.st_nlink;
   (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
   (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
   (*curr_file)->size = f.st_size;
-  add_date(&((*curr_file)->date), f);
-  MEMCHECK(((*curr_file)->name = ft_strdup(file_name)));
+  file_modification_date_handler(&((*curr_file)->date), f);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
@@ -72,9 +75,9 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
 
   dir_name = (*dirs)->name;
   if (lstat(!dir_name ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
-  !((*curr_file)->modes = ft_strnew(10)))
+  !((*curr_file)->modes = ft_strnew(11)))
     exit(2);
-  get_file_info(curr_file, dirs, (*curr_file)->name, f);
+  get_file_info(curr_file, dirs, !dir_name ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), f);
   (*dirs)->total_blocks += f.st_blocks;
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
@@ -99,7 +102,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
-    (*tmp)->name = sd->d_name;
+    (*tmp)->name = ft_strdup(sd->d_name);
     add_file(tmp, &dirs, flags);
     tmp = &((*tmp)->next);
   }

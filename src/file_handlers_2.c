@@ -1,23 +1,5 @@
 #include "ft_ls.h"
 
-char get_file_entry_type(int mode)
-{
-  if (S_ISBLK(mode))
-    return ('b');
-  else if (S_ISCHR(mode))
-    return ('c');
-  else if (S_ISDIR(mode))
-    return ('d');
-  else if (S_ISLNK(mode))
-    return ('l');
-  else if (S_ISSOCK(mode))
-    return ('s');
-  else if (S_ISFIFO(mode))
-    return ('p');
-  else
-    return ('-');
-}
-
 void move_file(t_files **destRef, t_files **sourceRef)
 {
   t_files *new;
@@ -28,11 +10,24 @@ void move_file(t_files **destRef, t_files **sourceRef)
   *destRef = new;
 }
 
+void handle_file_merge_comparison(t_files **a, t_files **b, t_files **tmp, t_flags flags)
+{
+  int comparison;
+
+  comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+  if (flags & NEWEST_FIRST_SORT_FLAG)
+  {
+    comparison = (*a)->date.ms >= (*b)->date.ms;
+    if ((*a)->date.ms == (*b)->date.ms)
+      comparison = (*a)->date.ns >= (*b)->date.ns;
+  }
+  move_file(tmp, comparison ? a : b);
+}
+
 t_files *merge_splitted_files(t_files *a, t_files *b, t_flags flags)
 {
   t_files *res;
   t_files **tmp;
-  int comparison;
 
   res = NULL;
   tmp = &res;
@@ -48,10 +43,7 @@ t_files *merge_splitted_files(t_files *a, t_files *b, t_flags flags)
       *tmp = a;
       break;
     }
-    comparison = (flags & NEWEST_FIRST_SORT_FLAG) ?
-      a->date.unix_format >= b->date.unix_format :
-      ft_strcmp(a->name, b->name) <= 0;
-    move_file(tmp, comparison ? &a : &b);
+    handle_file_merge_comparison(&a, &b, tmp, flags);
     tmp = &((*tmp)->next);
   }
   return (res);

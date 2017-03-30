@@ -1,7 +1,7 @@
 #include "ft_ls.h"
 
 void long_listing_display(t_format format, t_files *file) {
-  printf("%s  ", file->modes);
+  printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
   printf("%*s  ", format.owner, file->owner);
   printf("%*s  ", format.group, file->group);
@@ -47,7 +47,7 @@ void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
       if (flags & REVERSE_FLAG)
         reverse_files(&dirs->files);
       display_handler(head, dirs, flags, IS_DIR);
-      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs));
+      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs), flags);
       if (!is_last_dir(dirs))
         printf("\n");
     }

@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 15:03:51 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/29 21:21:18 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/xattr.h>
+#include <sys/acl.h>
 
 #define MEMCHECK(x) if (!x) exit(2)
 
@@ -66,7 +68,8 @@ typedef struct s_date {
   char *day;
   char *hour;
   char *minute;
-  unsigned long long unix_format;
+  unsigned long long ms;
+  unsigned long long ns;
 } t_date;
 
 typedef struct s_files {
@@ -102,7 +105,7 @@ typedef union u_etarget {
 
 void ft_ls(char *target_dir);
 void help_handler(void);
-t_dirs *dir_handler(char **args, int num_args, t_flags flags);
+t_dirs *dir_handler(char **args, t_flags flags);
 int flag_handler(char **args, t_flags *flags);
 void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
@@ -112,13 +115,13 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_dirs **dirs, struct stat file_stat);
 int is_last_dir(t_dirs *dirs);
-t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs);
+t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs, t_flags flags);
 void memory_handler(void *mem_target, int target);
 int is_last_nondir(t_dirs *dirs);
 int is_only_dir(t_dirs *head);
 void file_sort(t_files **files, t_flags flags);
 int has_dirs(t_dirs *dirs);
-void dir_sort(t_dirs **dirs);
+void dir_sort(t_dirs **dirs, t_flags flags);
 void reverse_files(t_files **files);
 void reverse_dirs(t_dirs **dirs);
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags);

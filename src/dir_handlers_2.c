@@ -10,7 +10,21 @@ void move_dir(t_dirs **destRef, t_dirs **sourceRef)
   *destRef = new;
 }
 
-t_dirs *merge_splitted_dirs(t_dirs *a, t_dirs *b)
+void handle_dir_merge_comparison(t_dirs **a, t_dirs **b, t_dirs **tmp, t_flags flags)
+{
+  int comparison;
+
+  comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+  if (flags & NEWEST_FIRST_SORT_FLAG)
+  {
+    comparison = (*a)->date.ms >= (*b)->date.ms;
+    if ((*a)->date.ms == (*b)->date.ms)
+      comparison = (*a)->date.ns >= (*b)->date.ns;
+  }
+  move_dir(tmp, comparison ? a : b);
+}
+
+t_dirs *merge_splitted_dirs(t_dirs *a, t_dirs *b, t_flags flags)
 {
   t_dirs *res;
   t_dirs **tmp;
@@ -29,7 +43,7 @@ t_dirs *merge_splitted_dirs(t_dirs *a, t_dirs *b)
       *tmp = a;
       break;
     }
-    move_dir(tmp, a->date.unix_format >= b->date.unix_format ? &a : &b);
+    handle_dir_merge_comparison(&a, &b, tmp, flags); 
     tmp = &((*tmp)->next);
   }
   return (res);
@@ -56,25 +70,7 @@ void split_dirs(t_dirs *sourceRef, t_dirs **frontRef, t_dirs **backRef)
   slow->next = NULL;
 }
 
-void reverse_dirs(t_dirs **dirs)
-{
-  t_dirs *curr;
-  t_dirs *next;
-  t_dirs *prev;
-
-  prev = NULL;
-  curr = *dirs;
-  while (curr)
-  {
-    next = curr->next;
-    curr->next = prev;
-    prev = curr;
-    curr = next;
-  }
-  *dirs = prev;
-}
-
-void dir_sort(t_dirs **dirs)
+void dir_sort(t_dirs **dirs, t_flags flags)
 {
   t_dirs *head;
   t_dirs *a;
@@ -84,7 +80,7 @@ void dir_sort(t_dirs **dirs)
   if (!head || !head->next)
     return ;
   split_dirs(head, &a, &b);
-  dir_sort(&a);
-  dir_sort(&b);
-  *dirs = merge_splitted_dirs(a, b);
+  dir_sort(&a, flags);
+  dir_sort(&b, flags);
+  *dirs = merge_splitted_dirs(a, b, flags);
 }
