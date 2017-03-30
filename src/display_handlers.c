@@ -18,17 +18,17 @@ void date_display_handler(t_format format, t_date date)
   }
 }
 
-void long_listing_display(t_format format, t_files *file) {
+void long_listing_display(t_format format, t_files *file, t_flags flags) {
   printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
-  if (file->owner)
-    printf("%*s  ", format.owner, file->owner);
+  if (file->owner && !(flags & DISPLAY_UID_AND_GID))
+    printf("%-*s  ", format.owner, file->owner);
   else
-    printf("%*d  ", format.user_id, file->user_id);
-  if (file->group)
-    printf("%*s  ", format.group, file->group);
+    printf("%-*d  ", format.user_id, file->user_id);
+  if (file->group && !(flags & DISPLAY_UID_AND_GID))
+    printf("%-*s  ", format.group, file->group);
   else
-    printf("%*d  ", format.group_id, file->group_id); 
+    printf("%-*d  ", format.group_id, file->group_id); 
   printf("%*ld ", format.fileSize, file->size);
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
@@ -50,7 +50,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
     if (tmp->status == IS_NOTDIR)
     {
       add_file(&tmp->self, &tmp, flags);
-      long_listing_display(dirs->format, tmp->self);
+      long_listing_display(dirs->format, tmp->self, flags);
       if (is_last_nondir(tmp) && should_separate)
         printf("\n");
     }
@@ -58,7 +58,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   }
 }
 
-void dir_display(t_dirs *head, t_dirs *dirs) {
+void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
   if (head->next)
     printf("%s:\n", dirs->name);
   if (!dirs->is_unreadable)
@@ -66,7 +66,7 @@ void dir_display(t_dirs *head, t_dirs *dirs) {
     printf("total %d\n", dirs->total_blocks);
     while (dirs->files)
     {
-      long_listing_display(dirs->format, dirs->files);
+      long_listing_display(dirs->format, dirs->files, flags);
       dirs->files = dirs->files->next;
     }
   }
@@ -93,7 +93,7 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   else if (target == IS_NOTDIR)
       nondir_display(dirs, flags);
   else
-    dir_display(head, dirs);
+    dir_display(head, dirs, flags);
 }// if (!(flags & LONG_LISTING_FLAG))
 //   return column_display(dirs, flags, target);
 

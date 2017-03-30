@@ -35,6 +35,8 @@ void set_flag(char *arg, t_flags *flags) {
       *flags |= REVERSE_FLAG;
     else if (arg[i] == 't')
       *flags |= NEWEST_FIRST_SORT_FLAG;
+    else if (arg[i] == 'n')
+      *flags |= DISPLAY_UID_AND_GID;
     else {
       target.flag = arg[i];
       error_handler(FLAG_ERR, target);

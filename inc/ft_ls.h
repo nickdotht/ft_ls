@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 01:30:09 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 02:02:14 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ typedef enum e_flags {
   RECURSIVE_FLAG = 2,
   ALL_FLAG = 4,
   REVERSE_FLAG = 8,
-  NEWEST_FIRST_SORT_FLAG = 16
+  NEWEST_FIRST_SORT_FLAG = 16,
+  DISPLAY_UID_AND_GID = 32
 } t_flags;
 
 typedef struct s_date {
