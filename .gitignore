@@ -3,7 +3,7 @@ a.out
 *.o
 ft_ls.dSYM/
 */*.a
-test/*
+test*
 .nfs.*
 *DS_Store
 build

@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 23:00:16 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 01:30:24 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void file_modification_date_handler(t_date *date, struct stat f) {
   MEMCHECK((date->minute = ft_strdup(buff)));
   strftime(buff, 200, "%Y", localtime(&(f.st_mtime)));
   MEMCHECK((date->year = ft_strdup(buff)));
-  date->ms = (unsigned long long)f.st_mtime;
-  date->ns = (unsigned long long)f.st_mtimespec.tv_nsec;
+  date->tv_sec = (unsigned long long)f.st_mtime;
+  date->tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
 }
 
 char extended_attributes_handler(char *file_path)
@@ -51,7 +51,6 @@ char extended_attributes_handler(char *file_path)
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct stat f)
 {
-  format_handler(dirs, f);
   (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
   (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
   (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
@@ -64,10 +63,13 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
   (*curr_file)->modes[9] = third_file_mode_handler(f.st_mode, ISOTH);
   (*curr_file)->modes[10] = extended_attributes_handler(file_path);
   (*curr_file)->link = f.st_nlink;
-  (*curr_file)->owner = ft_strdup(getpwuid(f.st_uid)->pw_name);
-  (*curr_file)->group = ft_strdup(getgrgid(f.st_gid)->gr_name);
+  (*curr_file)->owner = getpwuid(f.st_uid) ? ft_strdup(getpwuid(f.st_uid)->pw_name) : NULL;
+  (*curr_file)->group = getgrgid(f.st_gid) ? ft_strdup(getgrgid(f.st_gid)->gr_name) : NULL;
+  (*curr_file)->user_id = (int)f.st_uid;
+  (*curr_file)->group_id = (int)f.st_gid;
   (*curr_file)->size = f.st_size;
   file_modification_date_handler(&((*curr_file)->date), f);
+  format_handler(dirs, *curr_file);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)

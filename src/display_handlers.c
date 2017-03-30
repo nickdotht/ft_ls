@@ -21,8 +21,14 @@ void date_display_handler(t_format format, t_date date)
 void long_listing_display(t_format format, t_files *file) {
   printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
-  printf("%*s  ", format.owner, file->owner);
-  printf("%*s  ", format.group, file->group);
+  if (file->owner)
+    printf("%*s  ", format.owner, file->owner);
+  else
+    printf("%*d  ", format.user_id, file->user_id);
+  if (file->group)
+    printf("%*s  ", format.group, file->group);
+  else
+    printf("%*d  ", format.group_id, file->group_id); 
   printf("%*ld ", format.fileSize, file->size);
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);

@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 23:47:22 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 01:30:09 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ typedef struct s_format {
   int date_hour;
   int date_minute;
   int date_year;
+  int user_id;
+  int group_id;
 } t_format;
 
 typedef enum e_flags {
@@ -79,7 +81,9 @@ typedef struct s_files {
   char *modes;
   long int link;
   char *owner;
+  unsigned int user_id;
   char *group;
+  unsigned int group_id;
   long int size;
   t_date date;
   char *name;
@@ -116,7 +120,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
-void format_handler(t_dirs **dirs, struct stat file_stat);
+void format_handler(t_dirs **dirs, t_files *file);
 int is_last_dir(t_dirs *dirs);
 t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs, t_flags flags);
 void memory_handler(void *mem_target, int target);
