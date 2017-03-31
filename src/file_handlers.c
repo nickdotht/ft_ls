@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 03:44:32 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 19:59:15 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
     (*curr_file)->linked_to = ft_strdup(buff);
   }
   file_modification_date_handler(&((*curr_file)->date), f);
-  format_handler(dirs, *curr_file);
+  format_handler((*dirs)->format, *curr_file);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
@@ -93,10 +93,10 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
   char *dir_name;
 
   dir_name = (*dirs)->name;
-  if (lstat(!dir_name ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
+  if (lstat((*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
   !((*curr_file)->modes = ft_strnew(11)))
     exit(2);
-  get_file_info(curr_file, dirs, !dir_name ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), f);
+  get_file_info(curr_file, dirs, (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), f);
   (*dirs)->total_blocks += f.st_blocks;
   if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));

@@ -60,5 +60,5 @@ int flag_handler(char **args, t_flags *flags) {
     else
       break;
   }
-  return (i + 1);
+  return (i > 0 ? i + 1 : 1);
 }

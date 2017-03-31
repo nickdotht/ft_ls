@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/29 23:48:10 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 18:31:17 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,8 @@ t_dirs *new_dir(char *name, int status, int is_default)
   struct stat f;
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(t_dirs))));
-  if (status != IS_NOTDIR)
-  {
-    MEMCHECK((dir->name = ft_strdup(name)));
-  }
-  else
+  MEMCHECK((dir->name = ft_strdup(name)));
+  if (status == IS_NOTDIR)
   {
     MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
     MEMCHECK((dir->self->name = ft_strdup(name))); 
@@ -100,8 +97,8 @@ t_dirs *dir_handler(char **args, t_flags flags) {
   int i;
   t_dirs *dirs;
 
-  i = -1;
   dirs = new_dir(".", IS_DIR, 1);
+  i = -1;
   while (args[++i])
       set_dir(args[i], &dirs);
   dir_sort(&dirs, flags);

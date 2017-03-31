@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 03:35:31 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/03/30 20:02:25 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@
 #include <sys/xattr.h>
 #include <sys/acl.h>
 #include <sys/time.h>
+#include <glob.h>
 
 #define MEMCHECK(x) if (!x) exit(2)
 
 #define DIRS_MEM 1
-#define SUBDIRS_MEM 2
-#define FILES_MEM 4
+#define ERROR_MEM 2
 
 #define FLAG_ERR 1
 #define FILE_ACCESS_ERR 2
@@ -129,7 +129,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags);
 void add_dir(t_dirs **dirs, t_dirs *new);
-void format_handler(t_dirs **dirs, t_files *file);
+void format_handler(t_format *format, t_files *file);
 int is_last_dir(t_dirs *dirs);
 t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs, t_flags flags);
 void memory_handler(void *mem_target, int target);
@@ -143,4 +143,6 @@ void reverse_dirs(t_dirs **dirs);
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags);
 char get_file_entry_type(int mode);
 char third_file_mode_handler(int mode, int userType);
+char **argument_handler(int ac, char **av);
+t_format get_nondir_format(t_dirs **dirs, t_flags flags);
 #endif

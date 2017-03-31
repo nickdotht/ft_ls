@@ -48,15 +48,16 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
 void nondir_display(t_dirs *dirs, t_flags flags) {
   t_dirs *tmp;
   int should_separate;
+  t_format nondir_format;
 
   tmp = dirs;
   should_separate = has_dirs(dirs);
+  nondir_format = get_nondir_format(&dirs, flags);
   while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
     {
-      add_file(&tmp->self, &tmp, flags);
-      long_listing_display(dirs->format, tmp->self, tmp->has_chr_or_blk, flags);
+      long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
       if (is_last_nondir(tmp) && should_separate)
         printf("\n");
     }
@@ -92,6 +93,7 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
       {
         MEMCHECK((etarget.file = ft_strdup(tmp->name)));
         error_handler(NONEXISTENT_ERR, etarget);
+        memory_handler(etarget.file, ERROR_MEM);
       }
       tmp = tmp->next;
     }

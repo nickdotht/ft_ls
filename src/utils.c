@@ -42,18 +42,26 @@ int has_dirs(t_dirs *dirs)
   return (0);
 }
 
-// int is_only_dir(t_dirs *head)
-// {
-//   t_dirs *tmp;
-//   int count;
+t_format get_nondir_format(t_dirs **dirs, t_flags flags)
+{
+  t_format format;
+  t_dirs *tmp;
 
-//   tmp = head;
-//   count = 0;
-//   while (tmp)
-//   {
-//       if (tmp->status == IS_DIR)
-//         count++;
-//       tmp = tmp->next;
-//   }
-//   return (count > 1 ? 0 : 1);
-// }
+  tmp = *dirs;
+  format.date_month = 3;
+  format.date_day = 2;
+  format.date_hour = 2;
+  format.date_minute = 2;
+  format.date_year = 5;
+  while (tmp)
+  {
+    if (tmp->status == IS_NOTDIR)
+    {
+      add_file(&tmp->self, &tmp, flags);
+      format_handler(&format, tmp->self);
+    }
+    break;
+    tmp = tmp->next;
+  }
+  return (format);
+}
