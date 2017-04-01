@@ -49,21 +49,26 @@ char extended_attributes_handler(char *file_path)
   return (res);
 }
 
+void file_permission_handler(t_files **curr_file, char *file_path, struct stat f)
+{
+  (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
+  (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
+  (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
+  (*curr_file)->modes[3] = third_permission_mode_handler(f.st_mode, ISUSR);
+  (*curr_file)->modes[4] = (f.st_mode & S_IRGRP) ? 'r' : '-';
+  (*curr_file)->modes[5] = (f.st_mode & S_IWGRP) ? 'w' : '-';
+  (*curr_file)->modes[6] = third_permission_mode_handler(f.st_mode, ISGRP);
+  (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
+  (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
+  (*curr_file)->modes[9] = third_permission_mode_handler(f.st_mode, ISOTH);
+  (*curr_file)->modes[10] = extended_attributes_handler(file_path);
+}
+
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct stat f)
 {
   char buff[200];
 
-  (*curr_file)->modes[0] = get_file_entry_type(f.st_mode);
-  (*curr_file)->modes[1] = (f.st_mode & S_IRUSR) ? 'r' : '-';
-  (*curr_file)->modes[2] = (f.st_mode & S_IWUSR) ? 'w' : '-';
-  (*curr_file)->modes[3] = third_file_mode_handler(f.st_mode, ISUSR);
-  (*curr_file)->modes[4] = (f.st_mode & S_IRGRP) ? 'r' : '-';
-  (*curr_file)->modes[5] = (f.st_mode & S_IWGRP) ? 'w' : '-';
-  (*curr_file)->modes[6] = third_file_mode_handler(f.st_mode, ISGRP);
-  (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
-  (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
-  (*curr_file)->modes[9] = third_file_mode_handler(f.st_mode, ISOTH);
-  (*curr_file)->modes[10] = extended_attributes_handler(file_path);
+  file_permission_handler(curr_file, f);
   (*curr_file)->link = f.st_nlink;
   (*curr_file)->owner = getpwuid(f.st_uid) ? ft_strdup(getpwuid(f.st_uid)->pw_name) : NULL;
   (*curr_file)->group = getgrgid(f.st_gid) ? ft_strdup(getgrgid(f.st_gid)->gr_name) : NULL;
@@ -75,7 +80,8 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
     (*curr_file)->major = (long)major(f.st_rdev);
     (*curr_file)->minor = (long)minor(f.st_rdev);
     (*curr_file)->is_chr_or_blk = 1;
-    (*dirs)->has_chr_or_blk = 1;
+    if (!(*dirs)->has_chr_or_blk)
+      (*dirs)->has_chr_or_blk = 1;
   }
   if (S_ISLNK(f.st_mode))
   {
@@ -115,7 +121,6 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   }
   files = NULL;
   tmp = &files;
-  dirs->total_blocks = 0;
   while ((sd = readdir(dir)))
   {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')

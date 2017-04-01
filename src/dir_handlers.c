@@ -37,6 +37,7 @@ t_dirs *new_dir(char *name, int status, int is_default)
   dir->date.tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
   dir->is_default = is_default;
   dir->is_unreadable = 0;
+  dir->total_blocks = 0;
   return (dir);
 }
 

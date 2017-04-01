@@ -54,7 +54,7 @@ char get_correct_character(int mode, int isExec, int isSticky)
     }
 }
 
-char third_file_mode_handler(int mode, int userType)
+char third_permission_mode_handler(int mode, int userType)
 {
     if (userType == ISUSR)
         return get_correct_character(mode, S_IXUSR, S_ISUID);

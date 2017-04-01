@@ -142,7 +142,7 @@ void reverse_files(t_files **files);
 void reverse_dirs(t_dirs **dirs);
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags);
 char get_file_entry_type(int mode);
-char third_file_mode_handler(int mode, int userType);
+char third_permission_mode_handler(int mode, int userType);
 char **argument_handler(int ac, char **av);
 t_format get_nondir_format(t_dirs **dirs, t_flags flags);
 #endif
