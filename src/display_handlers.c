@@ -108,20 +108,23 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
 
 void ft_display(t_dirs *dirs, t_dirs *head, t_flags flags)
 {
+  t_dirs *tmp;
+
   display_handler(NULL, dirs, flags, IS_NONEXISTENT);
   display_handler(NULL, dirs, flags, IS_NOTDIR);
-  while (dirs)
+  tmp = dirs;
+  while (tmp)
   {
-    if (dirs->status == IS_DIR)
+    if (tmp->status == IS_DIR)
     {
-      dirs->files = file_handler(dirs, flags);
+      tmp->files = file_handler(tmp, flags);
       if (flags & REVERSE_FLAG)
-        reverse_files(&dirs->files);
-      display_handler(head, dirs, flags, IS_DIR);
-      dirs->next = subdir_handler(dirs->next, &(dirs->sub_dirs), flags);
-      if (!is_last_dir(dirs))
+        reverse_files(&tmp->files);
+      display_handler(head, tmp, flags, IS_DIR);
+      tmp->next = subdir_handler(tmp->next, &(tmp->sub_dirs), flags);
+      if (!is_last_dir(tmp))
         printf("\n");
     }
-    dirs = dirs->next;
+    tmp = tmp->next;
   }
 }

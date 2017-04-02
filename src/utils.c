@@ -46,21 +46,18 @@ t_format get_nondir_format(t_dirs **dirs, t_flags flags)
 {
   t_format format;
   t_dirs *tmp;
+  int format_option;
 
   tmp = *dirs;
-  format.date_month = 3;
-  format.date_day = 2;
-  format.date_hour = 2;
-  format.date_minute = 2;
-  format.date_year = 5;
+  format_option = INIT_FORMAT;
   while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
     {
-      add_file(&tmp->self, &tmp, flags);
-      format_handler(&format, tmp->self);
+      add_file(&tmp->self, &tmp, flags, INIT_FORMAT);
+      format_handler(&format, tmp->self, format_option);
+      format_option = UPDATE_FORMAT;
     }
-    break;
     tmp = tmp->next;
   }
   return (format);

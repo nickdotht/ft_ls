@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/01 21:42:37 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/01 23:49:58 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,12 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[10] = extended_attributes_handler(file_path);
 }
 
-void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct stat f)
+void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option)
 {
   char buff[200];
+  struct stat f;
 
+  f = (*curr_file)->f;
   file_permission_handler(curr_file, file_path, f);
   (*curr_file)->link = f.st_nlink;
   (*curr_file)->owner = getpwuid(f.st_uid) ? ft_strdup(getpwuid(f.st_uid)->pw_name) : NULL;
@@ -90,21 +92,22 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
     (*curr_file)->linked_to = ft_strdup(buff);
   }
   file_modification_date_handler(&((*curr_file)->date), f);
-  format_handler(&(*dirs)->format, *curr_file);
+  format_handler(&(*dirs)->format, *curr_file, format_option);
 }
 
-void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
+void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_option)
 {
-  struct stat f;
   char *dir_name;
+  char *file_path;
 
   dir_name = (*dirs)->name;
-  if (lstat((*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), &f) < 0 ||
-  !((*curr_file)->modes = ft_strnew(11)))
+  file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
+  if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
     exit(2);
-  get_file_info(curr_file, dirs, (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name), f);
-  (*dirs)->total_blocks += f.st_blocks;
-  if (S_ISDIR(f.st_mode) && (flags & RECURSIVE_FLAG))
+  get_file_info(curr_file, dirs, file_path, format_option);
+  if ((*dirs)->status == IS_DIR)
+    (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
+  if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
 
@@ -113,6 +116,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   struct dirent *sd;
   t_files *files;
   t_files **tmp;
+  int format_option;
 
   if (!(dir = opendir(dirs->name)))
   {
@@ -121,13 +125,15 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   }
   files = NULL;
   tmp = &files;
+  format_option = INIT_FORMAT;
   while ((sd = readdir(dir)))
   {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
     (*tmp)->name = ft_strdup(sd->d_name);
-    add_file(tmp, &dirs, flags);
+    add_file(tmp, &dirs, flags, format_option);
+    format_option = UPDATE_FORMAT;
     tmp = &((*tmp)->next);
   }
   closedir(dir);

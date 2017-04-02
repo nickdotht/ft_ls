@@ -1,6 +1,25 @@
 #include "ft_ls.h"
 
-void format_handler(t_format *format, t_files *file) {
+void initialize_format(t_format *format)
+{
+  format->date_month = 3;
+  format->date_day = 2;
+  format->date_hour = 2;
+  format->date_minute = 2;
+  format->date_year = 5;
+  format->link = 0;
+  format->owner = 0;
+  format->group = 0;
+  format->fileSize = 0;
+  format->user_id = 0;
+  format->group_id = 0;
+  format->major = 0;
+  format->minor = 0;
+}
+
+void format_handler(t_format *format, t_files *file, int format_option) {
+  if (format_option == INIT_FORMAT)
+    initialize_format(format);
   if (format->link < ft_intlen(file->link))
     format->link = ft_intlen(file->link);
   if (format->owner < (int)ft_strlen(file->owner))

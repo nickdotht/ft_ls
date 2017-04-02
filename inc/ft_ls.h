@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 20:02:25 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/01 23:46:53 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,9 @@
 #define ISUSR 1
 #define ISGRP 2
 #define ISOTH 4
+
+#define INIT_FORMAT 1
+#define UPDATE_FORMAT 2
 
 typedef struct s_format {
   int link;
@@ -96,6 +99,7 @@ typedef struct s_files {
   int is_link;
   char *linked_to;
   struct s_files *next;
+  struct stat f;
 } t_files;
 
 typedef struct s_dirs {
@@ -127,9 +131,9 @@ void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
 void set_dir(char *arg, t_dirs **dirs);
-void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags);
+void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_option);
 void add_dir(t_dirs **dirs, t_dirs *new);
-void format_handler(t_format *format, t_files *file);
+void format_handler(t_format *format, t_files *file, int format_option);
 int is_last_dir(t_dirs *dirs);
 t_dirs *subdir_handler(t_dirs *next, t_dirs **sub_dirs, t_flags flags);
 void memory_handler(void *mem_target, int target);
