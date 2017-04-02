@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/03/30 19:59:15 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/01 21:42:37 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
 {
   char buff[200];
 
-  file_permission_handler(curr_file, f);
+  file_permission_handler(curr_file, file_path, f);
   (*curr_file)->link = f.st_nlink;
   (*curr_file)->owner = getpwuid(f.st_uid) ? ft_strdup(getpwuid(f.st_uid)->pw_name) : NULL;
   (*curr_file)->group = getgrgid(f.st_gid) ? ft_strdup(getgrgid(f.st_gid)->gr_name) : NULL;
@@ -90,7 +90,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, struct s
     (*curr_file)->linked_to = ft_strdup(buff);
   }
   file_modification_date_handler(&((*curr_file)->date), f);
-  format_handler((*dirs)->format, *curr_file);
+  format_handler(&(*dirs)->format, *curr_file);
 }
 
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags)
