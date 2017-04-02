@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/01 21:51:22 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/02 01:19:15 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int main(int ac, char **av)
   dirs = dir_handler(av + i, flags);
   if (flags & REVERSE_FLAG)
     reverse_dirs(&dirs);
-  ft_display(dirs, dirs, flags);
+  ft_display(dirs, flags);
   memory_handler(&dirs, DIRS_MEM);
   exit(0);
 }

@@ -15,7 +15,7 @@ void free_files(t_files **files)
     free((*files)->date.day);
     free((*files)->date.hour);
     free((*files)->date.minute);
-    free((*files)->date.year);    
+    free((*files)->date.year);
     ft_memdel((void *)files);
     *files = next;
   }

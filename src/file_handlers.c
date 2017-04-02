@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/01 23:49:58 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/02 00:05:51 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,15 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
   char *file_path;
 
   dir_name = (*dirs)->name;
-  file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
-  if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
-    exit(2);
-  get_file_info(curr_file, dirs, file_path, format_option);
-  if ((*dirs)->status == IS_DIR)
-    (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
+  if (flags & LONG_LISTING_FLAG)
+  {
+    file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
+    if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
+      exit(2);
+    get_file_info(curr_file, dirs, file_path, format_option);
+    if ((*dirs)->status == IS_DIR)
+      (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
+  }
   if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
