@@ -47,18 +47,54 @@ void column_display(t_dirs *dirs, int target, int should_separate)
     struct winsize w;
     int cols;
     int rows;
-    // char **arr;
+    char **arr;
     int term_width;
-    (void)target;
+    t_dirs *tmp;
+    int i;
+    int pos;
     (void)should_separate;
+
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     term_width = w.ws_col;
-    cols = term_width / (dirs->max_file_len + 1);
-    rows = dirs->file_count / cols;
-    printf("Cols: %d\n", cols);
-    printf("Rows: %d\n", rows);
-    printf("Num Files: %d\n", dirs->file_count);
-    exit(0);
+    tmp = dirs;
+    while (tmp)
+    {
+      if (tmp->status == target)
+      {
+        cols = term_width / (tmp->max_file_len + 1);
+        if ((tmp->max_file_len + 1) * tmp->file_count < term_width)
+          cols = tmp->file_count;
+        rows = tmp->file_count / cols;
+        if (tmp->file_count % cols)
+          ++rows;
+        MEMCHECK((arr = (char **)ft_memalloc(sizeof(char *) * tmp->file_count)));
+        i = 0;
+        while (tmp->files)
+        {
+          arr[i++] = ft_strdup(tmp->files->name);
+          tmp->files = tmp->files->next;
+        }
+        pos = 0;
+        i = -1;
+        while (++i < rows)
+        {
+          int j = -1;
+          pos = i;
+          while (++j < cols)
+          {
+            printf("%-*s ", tmp->max_file_len, arr[pos]);
+            pos += rows;
+            if (pos >= tmp->file_count)
+              break;
+          }
+          printf("\n");
+        }
+        free(arr);
+        if (!is_last_dir(tmp))
+          printf("\n");
+      }
+      tmp = tmp->next;
+    }
 }
 
 void nondir_display(t_dirs *dirs, t_flags flags) {
@@ -120,9 +156,7 @@ void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
       nondir_display(dirs, flags);
   else
     dir_display(head, dirs, flags);
-}// if (!(flags & LONG_LISTING_FLAG))
-//   return column_display(dirs, flags, target);
-
+}
 
 void ft_display(t_dirs *dirs, t_flags flags)
 {
@@ -144,6 +178,7 @@ void ft_display(t_dirs *dirs, t_flags flags)
       if (!is_last_dir(tmp) && (flags & LONG_LISTING_FLAG))
         printf("\n");
     }
+    // DO THE COLUMN DISPLAY HERE, SO YOU WILL ONLY DO IT FOR EACH DIR, NO NEED TO PASS ALL DIRS!!hjdfgddddfƒh
     if (!(flags & LONG_LISTING_FLAG))
       column_display(dirs, IS_DIR, 0);
     tmp = tmp->next;
