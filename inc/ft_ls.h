@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/02 01:19:10 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/03 20:05:43 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,8 @@ typedef struct s_dirs {
   int       total_blocks;
   struct s_dirs *sub_dirs;
   struct s_dirs *next;
+  int file_count;
+  int max_file_len;
   t_date date;
   int has_chr_or_blk;
 } t_dirs;

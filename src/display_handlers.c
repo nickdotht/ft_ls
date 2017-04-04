@@ -42,17 +42,23 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("\n");
 }
 
-void column_display(t_dirs *dirs, int target)
+void column_display(t_dirs *dirs, int target, int should_separate)
 {
     struct winsize w;
     int cols;
     int rows;
-    int num;
-    int max_len;
-
+    // char **arr;
+    int term_width;
+    (void)target;
+    (void)should_separate;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    printf ("lines %d\n", w.ws_row);
-    printf ("columns %d\n", w.ws_col);
+    term_width = w.ws_col;
+    cols = term_width / (dirs->max_file_len + 1);
+    rows = dirs->file_count / cols;
+    printf("Cols: %d\n", cols);
+    printf("Rows: %d\n", rows);
+    printf("Num Files: %d\n", dirs->file_count);
+    exit(0);
 }
 
 void nondir_display(t_dirs *dirs, t_flags flags) {
@@ -62,9 +68,9 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
 
   tmp = dirs;
   should_separate = has_dirs(dirs);
-  nondir_format = get_nondir_format(&dirs, flags);
   if (!(flags & LONG_LISTING_FLAG))
-    return (column_display(dirs, IS_NOTDIR));
+    return (column_display(dirs, IS_NOTDIR, should_separate));
+  nondir_format = get_nondir_format(&dirs, flags);
   while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
@@ -77,7 +83,9 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   }
 }
 
-void dir_display(t_dirs *dirs, t_flags flags) {
+void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
+  if (head->next)
+      printf("%s:\n", dirs->name);
   if (!dirs->is_unreadable)
   {
     printf("total %d\n", dirs->total_blocks);
@@ -91,7 +99,7 @@ void dir_display(t_dirs *dirs, t_flags flags) {
     printf("ft_ls: %s: Permission denied\n", dirs->name);
 }
 
-void display_handler(t_dirs *dirs, t_flags flags, int target) {
+void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {
   t_etarget etarget;
   t_dirs  *tmp;
 
@@ -111,7 +119,7 @@ void display_handler(t_dirs *dirs, t_flags flags, int target) {
   else if (target == IS_NOTDIR)
       nondir_display(dirs, flags);
   else
-    dir_display(dirs, flags);
+    dir_display(head, dirs, flags);
 }// if (!(flags & LONG_LISTING_FLAG))
 //   return column_display(dirs, flags, target);
 
@@ -120,8 +128,8 @@ void ft_display(t_dirs *dirs, t_flags flags)
 {
   t_dirs *tmp;
 
-  display_handler(dirs, flags, IS_NONEXISTENT);
-  display_handler(dirs, flags, IS_NOTDIR);
+  display_handler(NULL, dirs, flags, IS_NONEXISTENT);
+  // display_handler(NULL, dirs, flags, IS_NOTDIR);
   tmp = dirs;
   while (tmp)
   {
@@ -130,16 +138,14 @@ void ft_display(t_dirs *dirs, t_flags flags)
       tmp->files = file_handler(tmp, flags);
       if (flags & REVERSE_FLAG)
         reverse_files(&tmp->files);
-      if (dirs->next)
-        printf("%s:\n", tmp->name);
-      if (!(flags & LONG_LISTING_FLAG))
-        column_display(tmp, IS_DIR);
-      else
-        display_handler(tmp, flags, IS_DIR);
+      if (flags & LONG_LISTING_FLAG)
+        display_handler(dirs, tmp, flags, IS_DIR);
       tmp->next = subdir_handler(tmp->next, &(tmp->sub_dirs), flags);
-      if (!is_last_dir(tmp))
+      if (!is_last_dir(tmp) && (flags & LONG_LISTING_FLAG))
         printf("\n");
     }
+    if (!(flags & LONG_LISTING_FLAG))
+      column_display(dirs, IS_DIR, 0);
     tmp = tmp->next;
   }
 }

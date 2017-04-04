@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/02 00:05:51 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/03 20:05:36 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
 {
   char *dir_name;
   char *file_path;
+  int file_name_len;
 
   dir_name = (*dirs)->name;
   if (flags & LONG_LISTING_FLAG)
@@ -109,6 +110,13 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     get_file_info(curr_file, dirs, file_path, format_option);
     if ((*dirs)->status == IS_DIR)
       (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
+  }
+  else
+  {
+    (*dirs)->file_count++;
+    file_name_len = ft_strlen((*curr_file)->name);
+    if (file_name_len > (*dirs)->max_file_len)
+      (*dirs)->max_file_len = file_name_len;
   }
   if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
