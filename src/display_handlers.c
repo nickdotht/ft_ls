@@ -42,59 +42,47 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("\n");
 }
 
-void column_display(t_dirs *dirs, int target, int should_separate)
+void column_display(t_files *files, file_count, max_file_len)
 {
     struct winsize w;
     int cols;
     int rows;
     char **arr;
     int term_width;
-    t_dirs *tmp;
     int i;
     int pos;
-    (void)should_separate;
 
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     term_width = w.ws_col;
-    tmp = dirs;
-    while (tmp)
+    cols = term_width / (max_file_len + 1);
+    if ((max_file_len + 1) * file_count < term_width)
+      cols = file_count;
+    rows = file_count / cols;
+    if (file_count % cols)
+      ++rows;
+    MEMCHECK((arr = (char **)ft_memalloc(sizeof(char *) * file_count)));
+    i = 0;
+    while (files)
     {
-      if (tmp->status == target)
-      {
-        cols = term_width / (tmp->max_file_len + 1);
-        if ((tmp->max_file_len + 1) * tmp->file_count < term_width)
-          cols = tmp->file_count;
-        rows = tmp->file_count / cols;
-        if (tmp->file_count % cols)
-          ++rows;
-        MEMCHECK((arr = (char **)ft_memalloc(sizeof(char *) * tmp->file_count)));
-        i = 0;
-        while (tmp->files)
-        {
-          arr[i++] = ft_strdup(tmp->files->name);
-          tmp->files = tmp->files->next;
-        }
-        pos = 0;
-        i = -1;
-        while (++i < rows)
-        {
-          int j = -1;
-          pos = i;
-          while (++j < cols)
-          {
-            printf("%-*s ", tmp->max_file_len, arr[pos]);
-            pos += rows;
-            if (pos >= tmp->file_count)
-              break;
-          }
-          printf("\n");
-        }
-        free(arr);
-        if (!is_last_dir(tmp))
-          printf("\n");
-      }
-      tmp = tmp->next;
+      arr[i++] = ft_strdup(files->name);
+      files = files->next;
     }
+    pos = 0;
+    i = -1;
+    while (++i < rows)
+    {
+      int j = -1;
+      pos = i;
+      while (++j < cols)
+      {
+        printf("%-*s ", max_file_len, arr[pos]);
+        pos += rows;
+        if (pos >= file_count)
+          break;
+      }
+      printf("\n");
+    }
+    free(arr);
 }
 
 void nondir_display(t_dirs *dirs, t_flags flags) {
@@ -124,7 +112,10 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
       printf("%s:\n", dirs->name);
   if (!dirs->is_unreadable)
   {
-    printf("total %d\n", dirs->total_blocks);
+    if (flags & LONG_LISTING_FLAG)
+      printf("total %d\n", dirs->total_blocks);
+    else
+      return (column_display(dirs->files, dirs->file_count, dirs->max_file_len));
     while (dirs->files)
     {
       long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
@@ -172,15 +163,11 @@ void ft_display(t_dirs *dirs, t_flags flags)
       tmp->files = file_handler(tmp, flags);
       if (flags & REVERSE_FLAG)
         reverse_files(&tmp->files);
-      if (flags & LONG_LISTING_FLAG)
-        display_handler(dirs, tmp, flags, IS_DIR);
+      display_handler(dirs, tmp, flags, IS_DIR);
       tmp->next = subdir_handler(tmp->next, &(tmp->sub_dirs), flags);
       if (!is_last_dir(tmp) && (flags & LONG_LISTING_FLAG))
         printf("\n");
     }
-    // DO THE COLUMN DISPLAY HERE, SO YOU WILL ONLY DO IT FOR EACH DIR, NO NEED TO PASS ALL DIRS!!hjdfgddddfƒh
-    if (!(flags & LONG_LISTING_FLAG))
-      column_display(dirs, IS_DIR, 0);
     tmp = tmp->next;
   }
 }
