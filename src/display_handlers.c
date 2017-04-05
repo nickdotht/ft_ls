@@ -42,7 +42,7 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("\n");
 }
 
-void column_display(t_files *files, file_count, max_file_len)
+void column_display(t_files *files, int file_count, int max_file_len)
 {
     struct winsize w;
     int cols;
@@ -90,20 +90,21 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   int should_separate;
   t_format nondir_format;
 
-  tmp = dirs;
   should_separate = has_dirs(dirs);
-  if (!(flags & LONG_LISTING_FLAG))
-    return (column_display(dirs, IS_NOTDIR, should_separate));
-  nondir_format = get_nondir_format(&dirs, flags);
-  while (tmp)
+  if (flags & LONG_LISTING_FLAG)
   {
-    if (tmp->status == IS_NOTDIR)
+    nondir_format = get_nondir_format(&dirs, flags);
+    tmp = dirs;
+    while (tmp)
     {
-      long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
-      if (is_last_nondir(tmp) && should_separate)
-        printf("\n");
+      if (tmp->status == IS_NOTDIR)
+      {
+        long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
+        if (is_last_nondir(tmp) && should_separate)
+          printf("\n");
+      }
+      tmp = tmp->next;
     }
-    tmp = tmp->next;
   }
 }
 
@@ -154,7 +155,7 @@ void ft_display(t_dirs *dirs, t_flags flags)
   t_dirs *tmp;
 
   display_handler(NULL, dirs, flags, IS_NONEXISTENT);
-  // display_handler(NULL, dirs, flags, IS_NOTDIR);
+  display_handler(NULL, dirs, flags, IS_NOTDIR);
   tmp = dirs;
   while (tmp)
   {
@@ -165,7 +166,7 @@ void ft_display(t_dirs *dirs, t_flags flags)
         reverse_files(&tmp->files);
       display_handler(dirs, tmp, flags, IS_DIR);
       tmp->next = subdir_handler(tmp->next, &(tmp->sub_dirs), flags);
-      if (!is_last_dir(tmp) && (flags & LONG_LISTING_FLAG))
+      if (!is_last_dir(tmp))
         printf("\n");
     }
     tmp = tmp->next;
