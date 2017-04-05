@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/03 20:05:36 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/05 12:45:23 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,11 +102,11 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
   int file_name_len;
 
   dir_name = (*dirs)->name;
+  file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
+  if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
+    exit(2);
   if (flags & LONG_LISTING_FLAG)
   {
-    file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
-    if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
-      exit(2);
     get_file_info(curr_file, dirs, file_path, format_option);
     if ((*dirs)->status == IS_DIR)
       (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
@@ -122,12 +122,25 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
 
+char *serialize_file_name(char *name)
+{
+  char *new;
+  int i;
+
+  i = -1;
+  MEMCHECK((new = (char *)ft_memalloc(sizeof(char) * (ft_strlen(name) + 1))));
+  while (name[++i])
+    new[i] = name[i] == '\r' ? '?' : name[i];
+  return (new);
+}
+
 t_files *file_handler(t_dirs *dirs, t_flags flags) {
   DIR   *dir;
   struct dirent *sd;
   t_files *files;
   t_files **tmp;
   int format_option;
+  char *file_name;
 
   if (!(dir = opendir(dirs->name)))
   {
@@ -142,8 +155,13 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
     if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
-    (*tmp)->name = ft_strdup(sd->d_name);
+    file_name = sd->d_name;
+    if (ft_strchr(sd->d_name, '\r'))
+      file_name = serialize_file_name(sd->d_name);
+    printf("Hmm %s\n", file_name);
+    (*tmp)->name = ft_strdup(file_name);
     add_file(tmp, &dirs, flags, format_option);
+    printf("HMM\n");
     format_option = UPDATE_FORMAT;
     tmp = &((*tmp)->next);
   }

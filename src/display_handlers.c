@@ -60,9 +60,10 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
     rows = file_count / cols;
     if (file_count % cols)
       ++rows;
+    arr = NULL;
     if (target == IS_DIR)
     {
-      MEMCHECK((arr = (char **)ft_memalloc(sizeof(char *) * file_count)));
+      MEMCHECK((arr = (char **)ft_memalloc(sizeof(char *) * (file_count + 1))));
       i = 0;
       while (entries.files)
       {
@@ -85,7 +86,8 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
       }
       printf("\n");
     }
-    free(arr);
+    if (target == IS_DIR)
+      free(arr);
 }
 
 void nondir_column_display(t_dirs *dirs, int should_separate)
@@ -104,7 +106,7 @@ void nondir_column_display(t_dirs *dirs, int should_separate)
     if (tmp->status == IS_NOTDIR)
     {
       ++file_count;
-      if (ft_strlen(tmp->self->name) > max_file_len)
+      if ((int)ft_strlen(tmp->self->name) > max_file_len)
         max_file_len = ft_strlen(tmp->self->name);
     }
     tmp = tmp->next;
@@ -118,9 +120,10 @@ void nondir_column_display(t_dirs *dirs, int should_separate)
       entries.file_names[++i] = ft_strdup(tmp->self->name);
     tmp = tmp->next;
   }
-  column_display(entries, file_count, max_file_len, IS_NOTDIR);
+  if (file_count)
+    column_display(entries, file_count, max_file_len, IS_NOTDIR);
   free(entries.file_names);
-  if (should_separate)
+  if (file_count && should_separate)
     printf("\n");
 }
 
@@ -144,8 +147,6 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
     }
     tmp = tmp->next;
   }
-  // Think about using an union to pass either a t_file or an array to the column_display function
-  tmp = tmp->next;
 }
 
 void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
