@@ -126,6 +126,11 @@ typedef union u_etarget {
 } t_etarget;
 
 
+typedef union u_entries {
+  t_files *files;
+  char **file_names;
+} t_entries;
+
 void ft_ls(char *target_dir);
 void help_handler(void);
 t_dirs *dir_handler(char **args, t_flags flags);
