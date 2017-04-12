@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/05 12:45:23 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/11 18:36:27 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void file_modification_date_handler(t_date *date, struct stat f) {
   date->tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
 }
 
-char extended_attributes_handler(char *file_path)
+char extended_attributes_handler(int has_unprintable_chars, char *file_path)
 {
   char res;
   acl_t acl;
@@ -46,7 +46,42 @@ char extended_attributes_handler(char *file_path)
   }
   if (acl)
     res = '+';
+  if (has_unprintable_chars)
+    res = '@';
   return (res);
+}
+
+char *serialize_file_name(char *name)
+{
+  char *new;
+  int i;
+  char c;
+
+  MEMCHECK((new = ft_strnew(ft_strlen(name))));
+  i = -1;
+  while (name[++i]) {
+    c = name[i];
+    if (!IS_PRINTABLE(name[i]))
+    {
+      if (name[i] == '\r')
+        c = '?';
+      else
+        c = ' ';
+    }
+    new[i] = c;
+  }
+  return (new);
+}
+
+int has_unprintable_chars(char *s)
+{
+  int i;
+
+  i = -1;
+  while (s[++i])
+    if (!IS_PRINTABLE(s[i]))
+      return (1);
+  return (0);
 }
 
 void file_permission_handler(t_files **curr_file, char *file_path, struct stat f)
@@ -61,12 +96,12 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
   (*curr_file)->modes[9] = third_permission_mode_handler(f.st_mode, ISOTH);
-  (*curr_file)->modes[10] = extended_attributes_handler(file_path);
+  (*curr_file)->modes[10] = extended_attributes_handler((*curr_file)->has_unprintable_chars, file_path);
 }
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option)
 {
-  char buff[200];
+  char buff[10000];
   struct stat f;
 
   f = (*curr_file)->f;
@@ -88,8 +123,13 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int form
   if (S_ISLNK(f.st_mode))
   {
     (*curr_file)->is_link = 1;
-    readlink(file_path, buff, 200);
-    (*curr_file)->linked_to = ft_strdup(buff);
+    readlink(file_path, buff, 10000);
+    if (has_unprintable_chars(buff)) {
+      MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff)));      
+    }
+    else {
+      MEMCHECK(((*curr_file)->linked_to = ft_strdup(buff)));
+    }
   }
   file_modification_date_handler(&((*curr_file)->date), f);
   format_handler(&(*dirs)->format, *curr_file, format_option);
@@ -122,18 +162,6 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
 
-char *serialize_file_name(char *name)
-{
-  char *new;
-  int i;
-
-  i = -1;
-  MEMCHECK((new = (char *)ft_memalloc(sizeof(char) * (ft_strlen(name) + 1))));
-  while (name[++i])
-    new[i] = name[i] == '\r' ? '?' : name[i];
-  return (new);
-}
-
 t_files *file_handler(t_dirs *dirs, t_flags flags) {
   DIR   *dir;
   struct dirent *sd;
@@ -156,12 +184,12 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
     file_name = sd->d_name;
-    if (ft_strchr(sd->d_name, '\r'))
-      file_name = serialize_file_name(sd->d_name);
-    printf("Hmm %s\n", file_name);
-    (*tmp)->name = ft_strdup(file_name);
+    if (has_unprintable_chars(sd->d_name)) {
+      (*tmp)->display_name = serialize_file_name(sd->d_name);
+      (*tmp)->has_unprintable_chars = 1;
+    }
+    (*tmp)->name = ft_strdup(sd->d_name);
     add_file(tmp, &dirs, flags, format_option);
-    printf("HMM\n");
     format_option = UPDATE_FORMAT;
     tmp = &((*tmp)->next);
   }

@@ -16,6 +16,8 @@ void free_files(t_files **files)
     free((*files)->date.hour);
     free((*files)->date.minute);
     free((*files)->date.year);
+    if ((*files)->has_unprintable_chars)
+      free((*files)->display_name);
     ft_memdel((void *)files);
     *files = next;
   }

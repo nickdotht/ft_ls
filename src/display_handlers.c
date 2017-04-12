@@ -21,10 +21,13 @@ void date_display_handler(t_format format, t_date date)
 void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_flags flags) {
   printf("%s ", file->modes);
   printf("%*ld ", format.link, file->link);
-  if (file->owner && !(flags & DISPLAY_UID_AND_GID))
-    printf("%-*s  ", format.owner, file->owner);
-  else
-    printf("%-*d  ", format.user_id, file->user_id);
+  if (!(flags & SUPRESS_OWNER))
+  {
+    if (file->owner && !(flags & DISPLAY_UID_AND_GID))
+      printf("%-*s  ", format.owner, file->owner);
+    else
+      printf("%-*d  ", format.user_id, file->user_id);
+  }
   if (file->group && !(flags & DISPLAY_UID_AND_GID))
     printf("%-*s  ", format.group, file->group);
   else
@@ -36,7 +39,10 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
   date_display_handler(format, file->date);
-  printf("%s", file->name);
+  if (file->has_unprintable_chars)
+    printf("%s", file->display_name);
+  else
+    printf("%s", file->name);
   if (file->is_link)
     printf(" -> %s", file->linked_to);
   printf("\n");
@@ -67,7 +73,10 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
       i = 0;
       while (entries.files)
       {
-        arr[i++] = ft_strdup(entries.files->name);
+        if (entries.files->has_unprintable_chars)
+          arr[i++] = ft_strdup(entries.files->display_name);
+        else
+          arr[i++] = ft_strdup(entries.files->name);
         entries.files = entries.files->next;
       }
     }
@@ -117,7 +126,12 @@ void nondir_column_display(t_dirs *dirs, int should_separate)
   while (tmp)
   {
     if (tmp->status == IS_NOTDIR)
-      entries.file_names[++i] = ft_strdup(tmp->self->name);
+    {
+      if (tmp->self->has_unprintable_chars)
+        entries.file_names[++i] = ft_strdup(tmp->self->display_name);
+      else
+        entries.file_names[++i] = ft_strdup(tmp->self->name);
+    }
     tmp = tmp->next;
   }
   if (file_count)
@@ -133,7 +147,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   t_format nondir_format;
 
   should_separate = has_dirs(dirs);
-  if (!(flags & LONG_LISTING_FLAG))
+  if (flags & COLUMN_DISPLAY)
     return (nondir_column_display(dirs, should_separate));
   nondir_format = get_nondir_format(&dirs, flags);
   tmp = dirs;
@@ -141,7 +155,15 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
   {
     if (tmp->status == IS_NOTDIR)
     {
-      long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
+      if (flags & LONG_LISTING_FLAG)
+        long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
+      else
+      {
+        if (tmp->self->has_unprintable_chars)
+          printf("%s\n", tmp->self->display_name);
+        else
+          printf("%s\n", tmp->self->name);
+      }
       if (is_last_nondir(tmp) && should_separate)
         printf("\n");
     }
@@ -154,23 +176,29 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
 
   if (head->next)
       printf("%s:\n", dirs->name);
-  if (!dirs->is_unreadable)
+  if (dirs->is_unreadable)
+    return ((void)printf("ft_ls: %s: Permission denied\n", dirs->name));
+  if (flags & LONG_LISTING_FLAG)
+    printf("total %d\n", dirs->total_blocks);
+  else if (flags & COLUMN_DISPLAY)
+  {
+    entries.files = dirs->files;
+    if (dirs->file_count)
+      return (column_display(entries, dirs->file_count, dirs->max_file_len, IS_DIR));
+  }
+  while (dirs->files)
   {
     if (flags & LONG_LISTING_FLAG)
-      printf("total %d\n", dirs->total_blocks);
+      long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
     else
     {
-      entries.files = dirs->files;
-      return (column_display(entries, dirs->file_count, dirs->max_file_len, IS_DIR));
+      if (dirs->files->has_unprintable_chars)
+        printf("%s\n", dirs->files->display_name);
+      else
+        printf("%s\n", dirs->files->name);
     }
-    while (dirs->files)
-    {
-      long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
-      dirs->files = dirs->files->next;
-    }
+    dirs->files = dirs->files->next;
   }
-  else
-    printf("ft_ls: %s: Permission denied\n", dirs->name);
 }
 
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target) {

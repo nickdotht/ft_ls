@@ -55,7 +55,8 @@ t_format get_nondir_format(t_dirs **dirs, t_flags flags)
     if (tmp->status == IS_NOTDIR)
     {
       add_file(&tmp->self, &tmp, flags, INIT_FORMAT);
-      format_handler(&format, tmp->self, format_option);
+      if (flags & LONG_LISTING_FLAG)
+        format_handler(&format, tmp->self, format_option);
       format_option = UPDATE_FORMAT;
     }
     tmp = tmp->next;

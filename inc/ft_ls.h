@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/03 20:05:43 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/11 19:41:47 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@
 #define ISGRP 2
 #define ISOTH 4
 
+#define IS_PRINTABLE(c) (c >= ' ' && c <= '~')
+
 #define INIT_FORMAT 1
 #define UPDATE_FORMAT 2
 
@@ -71,7 +73,11 @@ typedef enum e_flags {
   ALL_FLAG = 4,
   REVERSE_FLAG = 8,
   NEWEST_FIRST_SORT_FLAG = 16,
-  DISPLAY_UID_AND_GID = 32
+  DISPLAY_UID_AND_GID = 32,
+  SUPRESS_OWNER = 64,
+  ONE_ENTRY_PER_LINE = 128,
+  COLUMN_DISPLAY = 256,
+  SORT_BY_CREATION_DATE = 512
 } t_flags;
 
 typedef struct s_date {
@@ -99,6 +105,8 @@ typedef struct s_files {
   int is_chr_or_blk;
   int is_link;
   char *linked_to;
+  int has_unprintable_chars;
+  char *display_name;
   struct s_files *next;
   struct stat f;
 } t_files;
