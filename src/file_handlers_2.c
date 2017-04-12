@@ -15,11 +15,45 @@ void handle_file_merge_comparison(t_files **a, t_files **b, t_files **tmp, t_fla
   int comparison;
 
   comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
-  if (flags & NEWEST_FIRST_SORT_FLAG)
+  if (flags & MODIFICATION_DATE_SORT)
   {
-    comparison = (*a)->date.tv_sec >= (*b)->date.tv_sec;
-    if ((*a)->date.tv_sec == (*b)->date.tv_sec)
-      comparison = (*a)->date.tv_nsec >= (*b)->date.tv_nsec;
+    comparison = (*a)->date.mtv_sec >= (*b)->date.mtv_sec;
+    if ((*a)->date.mtv_sec == (*b)->date.mtv_sec)
+    {
+      comparison = (*a)->date.mtv_nsec >= (*b)->date.mtv_nsec;
+      if ((*a)->date.mtv_nsec == (*b)->date.mtv_nsec)
+        comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+    }
+  }
+  else if (flags & CREATION_DATE_SORT)
+  {
+    comparison = (*a)->date.birthtv_sec >= (*b)->date.birthtv_sec;
+    if ((*a)->date.birthtv_sec == (*b)->date.birthtv_sec)
+    {
+      comparison = (*a)->date.birthtv_nsec >= (*b)->date.birthtv_nsec;
+      if ((*a)->date.birthtv_nsec == (*b)->date.birthtv_nsec)
+        comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+    }
+  }
+  else if (flags & LAST_ACCESS_DATE_SORT)
+  {
+    comparison = (*a)->date.atv_sec >= (*b)->date.atv_sec;
+    if ((*a)->date.atv_sec == (*b)->date.atv_sec)
+    {
+      comparison = (*a)->date.atv_nsec >= (*b)->date.atv_nsec;
+      if ((*a)->date.atv_nsec == (*b)->date.atv_nsec)
+        comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+    }
+  }
+  else if (flags & LAST_STATUS_CHANGE_SORT)
+  {
+    comparison = (*a)->date.ctv_sec >= (*b)->date.ctv_sec;
+    if ((*a)->date.ctv_sec == (*b)->date.ctv_sec)
+    {
+      comparison = (*a)->date.ctv_nsec >= (*b)->date.ctv_nsec;
+      if ((*a)->date.ctv_nsec == (*b)->date.ctv_nsec)
+        comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+    }
   }
   move_file(tmp, comparison ? a : b);
 }

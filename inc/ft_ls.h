@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/11 19:41:47 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/12 12:34:42 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,14 @@ typedef enum e_flags {
   RECURSIVE_FLAG = 2,
   ALL_FLAG = 4,
   REVERSE_FLAG = 8,
-  NEWEST_FIRST_SORT_FLAG = 16,
+  MODIFICATION_DATE_SORT = 16,
   DISPLAY_UID_AND_GID = 32,
   SUPRESS_OWNER = 64,
   ONE_ENTRY_PER_LINE = 128,
   COLUMN_DISPLAY = 256,
-  SORT_BY_CREATION_DATE = 512
+  CREATION_DATE_SORT = 512,
+  LAST_ACCESS_DATE_SORT = 1024,
+  LAST_STATUS_CHANGE_SORT = 2048  
 } t_flags;
 
 typedef struct s_date {
@@ -86,8 +88,14 @@ typedef struct s_date {
   char *hour;
   char *minute;
   char *year;
-  unsigned long long tv_sec;
-  unsigned long long tv_nsec;
+  unsigned long long mtv_sec;
+  unsigned long long mtv_nsec;
+  unsigned long long atv_sec;
+  unsigned long long atv_nsec;
+  unsigned long long ctv_sec;
+  unsigned long long ctv_nsec;
+  unsigned long long birthtv_sec;
+  unsigned long long birthtv_nsec;
 } t_date;
 
 typedef struct s_files {
@@ -139,7 +147,6 @@ typedef union u_entries {
   char **file_names;
 } t_entries;
 
-void ft_ls(char *target_dir);
 void help_handler(void);
 t_dirs *dir_handler(char **args, t_flags flags);
 int flag_handler(char **args, t_flags *flags);

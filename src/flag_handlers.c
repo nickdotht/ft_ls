@@ -47,6 +47,41 @@ void display_flag_handler(t_flags *flags, char f)
   }
 }
 
+void sort_flag_handler(t_flags *flags, char f)
+{
+  if (f == 't')
+    *flags |= MODIFICATION_DATE_SORT;
+  else
+  {
+    if (*flags & MODIFICATION_DATE_SORT)
+      *flags &= ~MODIFICATION_DATE_SORT;
+    if (f == 'U')
+    {
+      if (*flags & LAST_ACCESS_DATE_SORT)
+        *flags &= ~LAST_ACCESS_DATE_SORT;
+      if (*flags & LAST_STATUS_CHANGE_SORT)
+        *flags &= ~LAST_STATUS_CHANGE_SORT;
+      *flags |= CREATION_DATE_SORT;
+    }
+    else if (f == 'u')
+    {
+      if (*flags & CREATION_DATE_SORT)
+        *flags &= ~CREATION_DATE_SORT;
+      if (*flags & LAST_STATUS_CHANGE_SORT)
+        *flags &= ~LAST_STATUS_CHANGE_SORT;
+      *flags |= LAST_ACCESS_DATE_SORT;
+    }
+    else
+    {
+      if (*flags & CREATION_DATE_SORT)
+        *flags &= ~CREATION_DATE_SORT;
+      if (*flags & LAST_ACCESS_DATE_SORT)
+        *flags &= ~LAST_ACCESS_DATE_SORT;
+      *flags |= LAST_STATUS_CHANGE_SORT;
+    }
+  }
+}
+
 void set_flag(char *arg, t_flags *flags) {
   int i;
   t_etarget target;
@@ -61,12 +96,10 @@ void set_flag(char *arg, t_flags *flags) {
       *flags |= ALL_FLAG;
     else if (arg[i] == 'r')
       *flags |= REVERSE_FLAG;
-    else if (arg[i] == 't')
-      *flags |= NEWEST_FIRST_SORT_FLAG;
     else if (arg[i] == 'n')
       *flags |= DISPLAY_UID_AND_GID;
-    else if (arg[i] == 'U')
-      *flags |= SORT_BY_CREATION_DATE;
+    else if (arg[i] == 'U' || arg[i] == 't' || arg[i] == 'u' || arg[i] == 'c')
+      sort_flag_handler(flags, arg[i]);
     else if (arg[i] == '1' || arg[i] == 'l' || arg[i] == 'C' || arg[i] == 'g')
       display_flag_handler(flags, arg[i]);
     else {

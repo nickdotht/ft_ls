@@ -6,27 +6,41 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/11 18:36:27 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/12 12:38:33 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void file_modification_date_handler(t_date *date, struct stat f) {
+void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   char buff[200];
+  unsigned long long t;
 
-  strftime(buff, 200, "%b", localtime(&(f.st_mtime)));
+  date->mtv_sec = (unsigned long long)f.st_mtime;
+  date->mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
+  date->atv_sec = (unsigned long long)f.st_atime;
+  date->atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
+  date->ctv_sec = (unsigned long long)f.st_ctime;
+  date->ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
+  date->birthtv_sec = (unsigned long long)f.st_birthtime;
+  date->birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
+  t = date->mtv_sec;
+  if (flags & CREATION_DATE_SORT)
+    t = date->birthtv_sec;
+  if (flags & LAST_ACCESS_DATE_SORT)
+    t = date->atv_sec;
+  if (flags & LAST_STATUS_CHANGE_SORT)
+  t = date->ctv_sec;
+  strftime(buff, 200, "%b", localtime((const long *)&t));
   MEMCHECK((date->month = ft_strdup(buff)));
-  strftime(buff, 200, "%-d", localtime(&(f.st_mtime)));
+  strftime(buff, 200, "%-d", localtime((const long *)&t));
   MEMCHECK((date->day = ft_strdup(buff)));
-  strftime(buff, 200, "%H", localtime(&(f.st_mtime)));
+  strftime(buff, 200, "%H", localtime((const long *)&t));
   MEMCHECK((date->hour = ft_strdup(buff)));
-  strftime(buff, 200, "%M", localtime(&(f.st_mtime)));
+  strftime(buff, 200, "%M", localtime((const long *)&t));
   MEMCHECK((date->minute = ft_strdup(buff)));
-  strftime(buff, 200, "%Y", localtime(&(f.st_mtime)));
+  strftime(buff, 200, "%Y", localtime((const long *)&t));
   MEMCHECK((date->year = ft_strdup(buff)));
-  date->tv_sec = (unsigned long long)f.st_mtime;
-  date->tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
 }
 
 char extended_attributes_handler(int has_unprintable_chars, char *file_path)
@@ -99,7 +113,7 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[10] = extended_attributes_handler((*curr_file)->has_unprintable_chars, file_path);
 }
 
-void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option)
+void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option, t_flags flags)
 {
   char buff[10000];
   struct stat f;
@@ -131,7 +145,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int form
       MEMCHECK(((*curr_file)->linked_to = ft_strdup(buff)));
     }
   }
-  file_modification_date_handler(&((*curr_file)->date), f);
+  file_date_handler(&((*curr_file)->date), f, flags);
   format_handler(&(*dirs)->format, *curr_file, format_option);
 }
 
@@ -147,7 +161,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     exit(2);
   if (flags & LONG_LISTING_FLAG)
   {
-    get_file_info(curr_file, dirs, file_path, format_option);
+    get_file_info(curr_file, dirs, file_path, format_option, flags);
     if ((*dirs)->status == IS_DIR)
       (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
   }

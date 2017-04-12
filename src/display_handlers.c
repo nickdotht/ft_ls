@@ -1,15 +1,23 @@
 #include "ft_ls.h"
 
-void date_display_handler(t_format format, t_date date)
+void date_display_handler(t_format format, t_date date, t_flags flags)
 {
   struct timeval tp;
   unsigned long long curr_date;
   unsigned long long six_months;
+  unsigned long long t;
 
   gettimeofday(&tp, NULL);
   curr_date = (unsigned long long)tp.tv_sec;
   six_months = 15778476;
-  if (date.tv_sec < (curr_date - six_months) || date.tv_sec > (curr_date + six_months))
+  t = date.mtv_sec;
+  if (flags & CREATION_DATE_SORT)
+    t = date.birthtv_sec;
+  if (flags & LAST_ACCESS_DATE_SORT)
+    t = date.atv_sec;
+  if (flags & LAST_STATUS_CHANGE_SORT)
+    t = date.ctv_sec;
+  if (t < (curr_date - six_months) || t > (curr_date + six_months))
     printf("%*s ", format.date_year, date.year);
   else
   {
@@ -38,7 +46,7 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
     printf("%*ld ", has_chr_or_blk ? format.major + format.minor + format.fileSize + 2 : format.fileSize, file->size);
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
-  date_display_handler(format, file->date);
+  date_display_handler(format, file->date, flags);
   if (file->has_unprintable_chars)
     printf("%s", file->display_name);
   else

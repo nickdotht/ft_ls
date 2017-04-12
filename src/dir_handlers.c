@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/03 20:06:08 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/12 01:17:25 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,14 @@ t_dirs *new_dir(char *name, int status, int is_default)
     lstat(dir->name, &f);
   dir->status = status;
   dir->next = NULL;
-  dir->date.tv_sec = (unsigned long long)f.st_mtime;
-  dir->date.tv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
+  dir->date.mtv_sec = (unsigned long long)f.st_mtime;
+  dir->date.mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
+  dir->date.atv_sec = (unsigned long long)f.st_atime;
+  dir->date.atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
+  dir->date.ctv_sec = (unsigned long long)f.st_ctime;
+  dir->date.ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
+  dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
+  dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
   dir->is_default = is_default;
   dir->is_unreadable = 0;
   dir->total_blocks = 0;
