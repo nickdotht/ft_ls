@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/12 12:38:33 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/12 23:21:40 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   MEMCHECK((date->year = ft_strdup(buff)));
 }
 
-char extended_attributes_handler(int has_unprintable_chars, char *file_path)
+char extended_attributes_handler(int has_nonprintable_chars, char *file_path)
 {
   char res;
   acl_t acl;
@@ -60,12 +60,12 @@ char extended_attributes_handler(int has_unprintable_chars, char *file_path)
   }
   if (acl)
     res = '+';
-  if (has_unprintable_chars)
+  if (has_nonprintable_chars)
     res = '@';
   return (res);
 }
 
-char *serialize_file_name(char *name)
+char *serialize_file_name(char *name, int len)
 {
   char *new;
   int i;
@@ -73,9 +73,9 @@ char *serialize_file_name(char *name)
 
   MEMCHECK((new = ft_strnew(ft_strlen(name))));
   i = -1;
-  while (name[++i]) {
+  while (i < len && name[i]) {
     c = name[i];
-    if (!IS_PRINTABLE(name[i]))
+    if (IS_NONPRINTABLE(name[i]))
     {
       if (name[i] == '\r')
         c = '?';
@@ -87,13 +87,13 @@ char *serialize_file_name(char *name)
   return (new);
 }
 
-int has_unprintable_chars(char *s)
+int has_nonprintable_chars(char *s, int len)
 {
   int i;
 
   i = -1;
-  while (s[++i])
-    if (!IS_PRINTABLE(s[i]))
+  while (++i < len && s[i])
+    if (IS_NONPRINTABLE(s[i]))
       return (1);
   return (0);
 }
@@ -110,12 +110,12 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
   (*curr_file)->modes[9] = third_permission_mode_handler(f.st_mode, ISOTH);
-  (*curr_file)->modes[10] = extended_attributes_handler((*curr_file)->has_unprintable_chars, file_path);
+  (*curr_file)->modes[10] = extended_attributes_handler((*curr_file)->has_nonprintable_chars, file_path);
 }
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option, t_flags flags)
 {
-  char buff[10000];
+  char buff[1000];
   struct stat f;
 
   f = (*curr_file)->f;
@@ -137,12 +137,14 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int form
   if (S_ISLNK(f.st_mode))
   {
     (*curr_file)->is_link = 1;
-    readlink(file_path, buff, 10000);
-    if (has_unprintable_chars(buff)) {
-      MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff)));      
+    int link_len = 0;
+    if ((link_len = readlink(file_path, buff, 1000)) == -1)
+      exit(2);
+    if (has_nonprintable_chars(buff, link_len)) {
+      MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff, link_len)));      
     }
     else {
-      MEMCHECK(((*curr_file)->linked_to = ft_strdup(buff)));
+      MEMCHECK(((*curr_file)->linked_to = ft_strndup(buff, link_len)));
     }
   }
   file_date_handler(&((*curr_file)->date), f, flags);
@@ -159,9 +161,9 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
   file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
   if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
     exit(2);
+  get_file_info(curr_file, dirs, file_path, format_option, flags);
   if (flags & LONG_LISTING_FLAG)
   {
-    get_file_info(curr_file, dirs, file_path, format_option, flags);
     if ((*dirs)->status == IS_DIR)
       (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
   }
@@ -172,7 +174,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     if (file_name_len > (*dirs)->max_file_len)
       (*dirs)->max_file_len = file_name_len;
   }
-  if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG))
+  if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG) && !ft_strequ((*curr_file)->name, "..") && !ft_strequ((*curr_file)->name, "."))
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
 }
 
@@ -194,13 +196,15 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   format_option = INIT_FORMAT;
   while ((sd = readdir(dir)))
   {
-    if (!(flags & ALL_FLAG) && sd->d_name[0] == '.')
+    if (flags & HIDE_CURR_AND_PREV_DIRS && !(flags & ALL_FLAG) && (ft_strequ(sd->d_name, ".") || ft_strequ(sd->d_name, "..")))
+      continue ;
+    if (!(flags & ALL_FLAG) && !(flags & HIDE_CURR_AND_PREV_DIRS) && sd->d_name[0] == '.')
       continue ;
     MEMCHECK(((*tmp = (t_files *)ft_memalloc(sizeof(t_files)))));
     file_name = sd->d_name;
-    if (has_unprintable_chars(sd->d_name)) {
-      (*tmp)->display_name = serialize_file_name(sd->d_name);
-      (*tmp)->has_unprintable_chars = 1;
+    if (has_nonprintable_chars(sd->d_name, ft_strlen(sd->d_name))) {
+      (*tmp)->display_name = serialize_file_name(sd->d_name, ft_strlen(sd->d_name));
+      (*tmp)->has_nonprintable_chars = 1;
     }
     (*tmp)->name = ft_strdup(sd->d_name);
     add_file(tmp, &dirs, flags, format_option);

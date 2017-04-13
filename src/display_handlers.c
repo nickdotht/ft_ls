@@ -47,7 +47,7 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("%*s ", format.date_month, file->date.month);
   printf("%*s ", format.date_day, file->date.day);
   date_display_handler(format, file->date, flags);
-  if (file->has_unprintable_chars)
+  if (file->has_nonprintable_chars)
     printf("%s", file->display_name);
   else
     printf("%s", file->name);
@@ -81,7 +81,7 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
       i = 0;
       while (entries.files)
       {
-        if (entries.files->has_unprintable_chars)
+        if (entries.files->has_nonprintable_chars)
           arr[i++] = ft_strdup(entries.files->display_name);
         else
           arr[i++] = ft_strdup(entries.files->name);
@@ -135,7 +135,7 @@ void nondir_column_display(t_dirs *dirs, int should_separate)
   {
     if (tmp->status == IS_NOTDIR)
     {
-      if (tmp->self->has_unprintable_chars)
+      if (tmp->self->has_nonprintable_chars)
         entries.file_names[++i] = ft_strdup(tmp->self->display_name);
       else
         entries.file_names[++i] = ft_strdup(tmp->self->name);
@@ -167,7 +167,7 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
         long_listing_display(nondir_format, tmp->self, tmp->has_chr_or_blk, flags);
       else
       {
-        if (tmp->self->has_unprintable_chars)
+        if (tmp->self->has_nonprintable_chars)
           printf("%s\n", tmp->self->display_name);
         else
           printf("%s\n", tmp->self->name);
@@ -186,9 +186,9 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
       printf("%s:\n", dirs->name);
   if (dirs->is_unreadable)
     return ((void)printf("ft_ls: %s: Permission denied\n", dirs->name));
-  if (flags & LONG_LISTING_FLAG)
+  if ((flags & LONG_LISTING_FLAG) && dirs->files)
     printf("total %d\n", dirs->total_blocks);
-  else if (flags & COLUMN_DISPLAY)
+  if (flags & COLUMN_DISPLAY)
   {
     entries.files = dirs->files;
     if (dirs->file_count)
@@ -200,7 +200,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
       long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
     else
     {
-      if (dirs->files->has_unprintable_chars)
+      if (dirs->files->has_nonprintable_chars)
         printf("%s\n", dirs->files->display_name);
       else
         printf("%s\n", dirs->files->name);
