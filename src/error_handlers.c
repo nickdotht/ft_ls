@@ -8,5 +8,5 @@ void        error_handler(int err, t_etarget target)
         exit(1);
     }
     else if (err == FILE_ACCESS_ERR || err == NONEXISTENT_ERR)
-        printf("ft_ls: %s: No such file or directory\n", target.file);
+        printf("ls: %s: No such file or directory\n", target.file);
 }
