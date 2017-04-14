@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/14 00:16:01 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/14 06:47:34 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,25 +43,22 @@ void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   MEMCHECK((date->year = ft_strdup(buff)));
 }
 
-char extended_attributes_handler(int has_nonprintable_chars, char *file_path)
+char extended_attributes_handler(int is_readable, char *file_path)
 {
   char res;
   acl_t acl;
   acl_entry_t entry;
 
   res = ' ';
-  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0 && opendir(file_path))
+  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0 && is_readable)
     return ('@');
   acl = acl_get_link_np(file_path, ACL_TYPE_EXTENDED);
   if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
   {
+    return ('+');
     acl_free(acl);
     acl = NULL;
   }
-  if (acl)
-    res = '+';
-  if (has_nonprintable_chars)
-    res = '@';
   return (res);
 }
 
@@ -110,12 +107,12 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
   (*curr_file)->modes[9] = third_permission_mode_handler(f.st_mode, ISOTH);
-  (*curr_file)->modes[10] = extended_attributes_handler((*curr_file)->has_nonprintable_chars, file_path);
+  (*curr_file)->modes[10] = extended_attributes_handler(access(file_path, R_OK) == 0, file_path);
 }
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option, t_flags flags)
 {
-  char buff[1000];
+  char buff[256];
   struct stat f;
 
   f = (*curr_file)->f;
@@ -138,7 +135,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int form
   {
     (*curr_file)->is_link = 1;
     int link_len = 0;
-    if ((link_len = readlink(file_path, buff, 1000)) == -1)
+    if ((link_len = readlink(file_path, buff, 256)) == -1)
       exit(2);
     if (has_nonprintable_chars(buff, link_len)) {
       MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff, link_len)));      
@@ -175,7 +172,7 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
       (*dirs)->max_file_len = file_name_len;
   }
   if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG) && !ft_strequ((*curr_file)->name, "..") && !ft_strequ((*curr_file)->name, "."))
-    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*curr_file)->name);
+    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*curr_file)->name, flags);
 }
 
 // Make this a libft function

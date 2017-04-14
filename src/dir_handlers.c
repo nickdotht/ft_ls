@@ -6,26 +6,30 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 23:59:25 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/14 07:16:53 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name)
+t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_flags flags)
 {
   t_dirs *dir;
+  DIR   *dr;
   struct stat f;
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(t_dirs))));
   MEMCHECK((dir->name = ft_strdup(path)));
   MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
   MEMCHECK((dir->self->name = ft_strdup(path)));
-  if (status != IS_NONEXISTENT)
+  if (status == IS_LINK)
   {
-    dir->self->is_dir_info = 1;
-    if (subdir_name)
-      MEMCHECK((dir->display_name = ft_strdup(subdir_name)));
+    if (!(dr = opendir(dir->name)) || flags & LONG_LISTING_FLAG)
+      status = IS_NOTDIR;
+    else
+      status = IS_DIR;
+    if (dr)
+      closedir(dr);
   }
   if (status == IS_DIR)
   {
@@ -40,6 +44,12 @@ t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name)
     dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
     dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
     MEMCHECK((dir->self->display_name = ft_strdup(path)));
+  }
+  if (status != IS_NONEXISTENT)
+  {
+    dir->self->is_dir_info = 1;
+    if (subdir_name)
+      MEMCHECK((dir->display_name = ft_strdup(subdir_name)));
   }
   dir->status = status;
   dir->next = NULL;
@@ -81,23 +91,25 @@ void reverse_dirs(t_dirs **dirs)
   *dirs = prev;
 }
 
-void set_dir(char *path, t_dirs **dirs, char *subdir_name) {
+void set_dir(char *path, t_dirs **dirs, char *subdir_name, t_flags flags) {
   t_dirs *new;
   int status;
-  struct stat s;
+  struct stat f;
 
   status = IS_DIR;
-  if (lstat(path, &s) == -1)
+  if (lstat(path, &f) == -1)
   {
     if (ENOENT == errno)
       status = IS_NONEXISTENT;
   }
   else
   {
-    if (!S_ISDIR(s.st_mode))
+    if (!S_ISDIR(f.st_mode))
       status = IS_NOTDIR;
   }
-  new = new_dir(path, status, 0, subdir_name);
+  if (S_ISLNK(f.st_mode))
+    status = IS_LINK;
+  new = new_dir(path, status, 0, subdir_name, flags);
   if (!*dirs || (*dirs)->is_default)
     *dirs = new;
   else
@@ -110,7 +122,7 @@ t_dirs *dir_handler(char **args, t_flags flags) {
   t_etarget target;
   t_dirs *tmp;
 
-  dirs = new_dir(".", IS_DIR, 1, 0);
+  dirs = new_dir(".", IS_DIR, 1, 0, flags);
   i = -1;
   while (args[++i])
   {
@@ -121,8 +133,9 @@ t_dirs *dir_handler(char **args, t_flags flags) {
         free(target.file);
         exit(1);
       }
-      set_dir(args[i], &dirs, NULL);
+      set_dir(args[i], &dirs, NULL, flags);
   }
+
   if (flags & FILE_SIZE_SORT)
   {
     tmp = dirs;

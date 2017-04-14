@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 23:55:11 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/14 07:16:58 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <sys/time.h>
 #include <glob.h>
 #include <sys/ioctl.h>
+#include <fcntl.h>
 
 #define MEMCHECK(x) if (!x) exit(2)
 
@@ -41,6 +42,7 @@
 #define IS_NONEXISTENT 1
 #define IS_NOTDIR 2
 #define IS_DIR 4
+#define IS_LINK 8
 
 #define ISUSR 1
 #define ISGRP 2
@@ -159,7 +161,7 @@ int flag_handler(char **args, t_flags *flags);
 void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
-void set_dir(char *path, t_dirs **dirs, char *subdir_name);
+void set_dir(char *path, t_dirs **dirs, char *subdir_name, t_flags flags);
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_option);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_format *format, t_files *file, int format_option);
