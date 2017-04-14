@@ -181,11 +181,16 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
 
 void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
   t_entries entries;
+  t_etarget target;
 
   if (head->next)
       printf("%s:\n", dirs->name);
   if (dirs->is_unreadable)
-    return ((void)printf("ls: %s: Permission denied\n", dirs->name));
+  {
+    MEMCHECK((target.file = ft_strdup(dirs->display_name)));
+    return (error_handler(FILE_ACCESS_ERR, target));
+    free(target.file);
+  }
   if ((flags & LONG_LISTING_FLAG) && dirs->files)
     printf("total %d\n", dirs->total_blocks);
   if (flags & COLUMN_DISPLAY)

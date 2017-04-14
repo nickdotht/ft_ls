@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 16:50:43 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/13 23:55:11 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@
 
 #define INIT_FORMAT 1
 #define UPDATE_FORMAT 2
+#define IDLE_FORMAT 4
 
 typedef struct s_format {
   int link;
@@ -110,6 +111,7 @@ typedef struct s_files {
   long size;
   t_date date;
   char *name;
+  int is_dir_info;
   long major;
   long minor;
   int is_chr_or_blk;
@@ -135,6 +137,8 @@ typedef struct s_dirs {
   int file_count;
   int max_file_len;
   t_date date;
+  int is_subdir;
+  char *display_name;
   int has_chr_or_blk;
 } t_dirs;
 
@@ -155,7 +159,7 @@ int flag_handler(char **args, t_flags *flags);
 void error_handler(int err, t_etarget target);
 void display_handler(t_dirs *head, t_dirs *dirs, t_flags flags, int target);
 t_files *file_handler(t_dirs *dirs, t_flags flags);
-void set_dir(char *arg, t_dirs **dirs);
+void set_dir(char *path, t_dirs **dirs, char *subdir_name);
 void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_option);
 void add_dir(t_dirs **dirs, t_dirs *new);
 void format_handler(t_format *format, t_files *file, int format_option);

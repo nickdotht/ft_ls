@@ -6,24 +6,27 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 17:07:21 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/13 23:59:25 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-t_dirs *new_dir(char *name, int status, int is_default)
+t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name)
 {
   t_dirs *dir;
   struct stat f;
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(t_dirs))));
-  MEMCHECK((dir->name = ft_strdup(name)));
-  // if (status != IS_NONEXISTENT)
-  // {
+  MEMCHECK((dir->name = ft_strdup(path)));
   MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
-  MEMCHECK((dir->self->name = ft_strdup(name))); 
-  // }
+  MEMCHECK((dir->self->name = ft_strdup(path)));
+  if (status != IS_NONEXISTENT)
+  {
+    dir->self->is_dir_info = 1;
+    if (subdir_name)
+      MEMCHECK((dir->display_name = ft_strdup(subdir_name)));
+  }
   if (status == IS_DIR)
   {
     // Check if this passed
@@ -36,6 +39,7 @@ t_dirs *new_dir(char *name, int status, int is_default)
     dir->date.ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
     dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
     dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
+    MEMCHECK((dir->self->display_name = ft_strdup(path)));
   }
   dir->status = status;
   dir->next = NULL;
@@ -77,13 +81,13 @@ void reverse_dirs(t_dirs **dirs)
   *dirs = prev;
 }
 
-void set_dir(char *arg, t_dirs **dirs) {
+void set_dir(char *path, t_dirs **dirs, char *subdir_name) {
   t_dirs *new;
   int status;
   struct stat s;
 
   status = IS_DIR;
-  if (lstat(arg, &s) == -1)
+  if (lstat(path, &s) == -1)
   {
     if (ENOENT == errno)
       status = IS_NONEXISTENT;
@@ -93,7 +97,7 @@ void set_dir(char *arg, t_dirs **dirs) {
     if (!S_ISDIR(s.st_mode))
       status = IS_NOTDIR;
   }
-  new = new_dir(arg, status, 0);
+  new = new_dir(path, status, 0, subdir_name);
   if (!*dirs || (*dirs)->is_default)
     *dirs = new;
   else
@@ -106,7 +110,7 @@ t_dirs *dir_handler(char **args, t_flags flags) {
   t_etarget target;
   t_dirs *tmp;
 
-  dirs = new_dir(".", IS_DIR, 1);
+  dirs = new_dir(".", IS_DIR, 1, 0);
   i = -1;
   while (args[++i])
   {
@@ -117,14 +121,14 @@ t_dirs *dir_handler(char **args, t_flags flags) {
         free(target.file);
         exit(1);
       }
-      set_dir(args[i], &dirs);
+      set_dir(args[i], &dirs, NULL);
   }
   if (flags & FILE_SIZE_SORT)
   {
     tmp = dirs;
     while (tmp)
     {
-      add_file(&tmp->self, &tmp, flags, INIT_FORMAT);
+      add_file(&tmp->self, &tmp, flags, IDLE_FORMAT);
       tmp = tmp->next;
     }
   }

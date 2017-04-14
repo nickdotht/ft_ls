@@ -57,7 +57,11 @@ void handle_file_merge_comparison(t_files **a, t_files **b, t_files **tmp, t_fla
     }
   }
   else if (flags & FILE_SIZE_SORT)
+  {
     comparison = (*a)->size >= (*b)->size;
+    if ((*a)->size == (*b)->size)
+      comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
+  }
   move_file(tmp, comparison ? a : b);
 }
 

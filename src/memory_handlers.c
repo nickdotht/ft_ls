@@ -31,6 +31,7 @@ void free_dirs(t_dirs **dirs)
   {
     next = (*dirs)->next;
     free((*dirs)->name);
+    free((*dirs)->display_name);
     free_files(&((*dirs)->files));
     free_files(&((*dirs)->self));
     ft_memdel((void *)dirs);

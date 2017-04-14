@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 16:56:59 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/14 00:16:01 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,11 +158,11 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
   int file_name_len;
 
   dir_name = (*dirs)->name;
-  file_path = (*dirs)->status != IS_DIR ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
+  file_path = (*curr_file)->is_dir_info ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
   if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
     exit(2);
   get_file_info(curr_file, dirs, file_path, format_option, flags);
-  if (flags & LONG_LISTING_FLAG)
+  if ((flags & LONG_LISTING_FLAG) && !(*curr_file)->is_dir_info)
   {
     if ((*dirs)->status == IS_DIR)
       (*dirs)->total_blocks += (*curr_file)->f.st_blocks;
@@ -175,7 +175,22 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
       (*dirs)->max_file_len = file_name_len;
   }
   if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG) && !ft_strequ((*curr_file)->name, "..") && !ft_strequ((*curr_file)->name, "."))
-    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs));
+    set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*curr_file)->name);
+}
+
+// Make this a libft function
+char *get_entry_name(char *path)
+{
+  char **parts;
+
+  MEMCHECK((parts = ft_strsplit(path, '/')));
+  int i = -1;
+  while (parts[++i])
+  {
+    if (!parts[i + 1])
+      return (parts[i]);
+  }
+  return (path);
 }
 
 t_files *file_handler(t_dirs *dirs, t_flags flags) {
@@ -189,6 +204,7 @@ t_files *file_handler(t_dirs *dirs, t_flags flags) {
   if (!(dir = opendir(dirs->name)))
   {
     dirs->is_unreadable = 1;
+    MEMCHECK((dirs->display_name = get_entry_name(dirs->name)));
     return (NULL);
   }
   files = NULL;
