@@ -49,7 +49,7 @@ void display_flag_handler(t_flags *flags, char f)
 
 void sort_flag_handler(t_flags *flags, char f)
 {
-  if (f == 't')
+  if (f == 't' && !(*flags & FILE_SIZE_SORT))
     *flags |= MODIFICATION_DATE_SORT;
   else if (f == 'U')
   {
@@ -67,13 +67,19 @@ void sort_flag_handler(t_flags *flags, char f)
       *flags &= ~LAST_STATUS_CHANGE_SORT;
     *flags |= LAST_ACCESS_DATE_SORT;
   }
-  else
+  else if (f == 'c')
   {
     if (*flags & CREATION_DATE_SORT)
       *flags &= ~CREATION_DATE_SORT;
     if (*flags & LAST_ACCESS_DATE_SORT)
       *flags &= ~LAST_ACCESS_DATE_SORT;
     *flags |= LAST_STATUS_CHANGE_SORT;
+  }
+  else
+  {
+    if (*flags & MODIFICATION_DATE_SORT)
+      *flags &= ~MODIFICATION_DATE_SORT;
+    *flags |= FILE_SIZE_SORT;
   }
 }
 
@@ -95,7 +101,7 @@ void set_flag(char *arg, t_flags *flags) {
       *flags |= DISPLAY_UID_AND_GID;
     else if (arg[i] == 'A')
       *flags |= HIDE_CURR_AND_PREV_DIRS;
-    else if (arg[i] == 'U' || arg[i] == 't' || arg[i] == 'u' || arg[i] == 'c')
+    else if (arg[i] == 'U' || arg[i] == 't' || arg[i] == 'u' || arg[i] == 'c' || arg[i] == 'S')
       sort_flag_handler(flags, arg[i]);
     else if (arg[i] == '1' || arg[i] == 'l' || arg[i] == 'C' || arg[i] == 'g')
       display_flag_handler(flags, arg[i]);

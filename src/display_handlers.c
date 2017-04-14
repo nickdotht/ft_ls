@@ -185,7 +185,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
   if (head->next)
       printf("%s:\n", dirs->name);
   if (dirs->is_unreadable)
-    return ((void)printf("ft_ls: %s: Permission denied\n", dirs->name));
+    return ((void)printf("ls: %s: Permission denied\n", dirs->name));
   if ((flags & LONG_LISTING_FLAG) && dirs->files)
     printf("total %d\n", dirs->total_blocks);
   if (flags & COLUMN_DISPLAY)
@@ -237,6 +237,8 @@ void ft_display(t_dirs *dirs, t_flags flags)
   t_dirs *tmp;
 
   display_handler(NULL, dirs, flags, IS_NONEXISTENT);
+  if (flags & REVERSE_FLAG)
+    reverse_dirs(&dirs);
   display_handler(NULL, dirs, flags, IS_NOTDIR);
   tmp = dirs;
   while (tmp)

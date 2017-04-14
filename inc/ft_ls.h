@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/12 22:22:04 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/13 16:50:43 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ typedef enum e_flags {
   CREATION_DATE_SORT = 512,
   LAST_ACCESS_DATE_SORT = 1024,
   LAST_STATUS_CHANGE_SORT = 2048,
-  HIDE_CURR_AND_PREV_DIRS = 4096
+  HIDE_CURR_AND_PREV_DIRS = 4096,
+  FILE_SIZE_SORT = 8192
 } t_flags;
 
 typedef struct s_date {

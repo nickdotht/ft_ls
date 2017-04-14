@@ -14,6 +14,7 @@ void handle_file_merge_comparison(t_files **a, t_files **b, t_files **tmp, t_fla
 {
   int comparison;
 
+  // Try to do '<'' instead of '<=' to see if it would improve speed
   comparison = ft_strcmp((*a)->name, (*b)->name) <= 0;
   if (flags & MODIFICATION_DATE_SORT)
   {
@@ -55,6 +56,8 @@ void handle_file_merge_comparison(t_files **a, t_files **b, t_files **tmp, t_fla
       }
     }
   }
+  else if (flags & FILE_SIZE_SORT)
+    comparison = (*a)->size >= (*b)->size;
   move_file(tmp, comparison ? a : b);
 }
 

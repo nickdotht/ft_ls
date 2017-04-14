@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/13 02:23:14 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/13 17:07:21 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,23 +19,26 @@ t_dirs *new_dir(char *name, int status, int is_default)
 
   MEMCHECK((dir = (t_dirs *)ft_memalloc(sizeof(t_dirs))));
   MEMCHECK((dir->name = ft_strdup(name)));
-  if (status == IS_NOTDIR)
-  {
-    MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
-    MEMCHECK((dir->self->name = ft_strdup(name))); 
-  }
+  // if (status != IS_NONEXISTENT)
+  // {
+  MEMCHECK((dir->self = (t_files *)ft_memalloc(sizeof(t_files))));
+  MEMCHECK((dir->self->name = ft_strdup(name))); 
+  // }
   if (status == IS_DIR)
+  {
+    // Check if this passed
     lstat(dir->name, &f);
+    dir->date.mtv_sec = (unsigned long long)f.st_mtime;
+    dir->date.mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
+    dir->date.atv_sec = (unsigned long long)f.st_atime;
+    dir->date.atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
+    dir->date.ctv_sec = (unsigned long long)f.st_ctime;
+    dir->date.ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
+    dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
+    dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
+  }
   dir->status = status;
   dir->next = NULL;
-  dir->date.mtv_sec = (unsigned long long)f.st_mtime;
-  dir->date.mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
-  dir->date.atv_sec = (unsigned long long)f.st_atime;
-  dir->date.atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
-  dir->date.ctv_sec = (unsigned long long)f.st_ctime;
-  dir->date.ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
-  dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
-  dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
   dir->is_default = is_default;
   dir->is_unreadable = 0;
   dir->total_blocks = 0;
@@ -100,11 +103,31 @@ void set_dir(char *arg, t_dirs **dirs) {
 t_dirs *dir_handler(char **args, t_flags flags) {
   int i;
   t_dirs *dirs;
+  t_etarget target;
+  t_dirs *tmp;
 
   dirs = new_dir(".", IS_DIR, 1);
   i = -1;
   while (args[++i])
+  {
+      if (args[i][0] == '\0')
+      {
+        MEMCHECK((target.file = ft_strdup("fts_open")));
+        error_handler(NONEXISTENT_ERR, target);
+        free(target.file);
+        exit(1);
+      }
       set_dir(args[i], &dirs);
+  }
+  if (flags & FILE_SIZE_SORT)
+  {
+    tmp = dirs;
+    while (tmp)
+    {
+      add_file(&tmp->self, &tmp, flags, INIT_FORMAT);
+      tmp = tmp->next;
+    }
+  }
   dir_sort(&dirs, flags);
   return (dirs);
 }

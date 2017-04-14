@@ -55,6 +55,8 @@ void handle_dir_merge_comparison(t_dirs **a, t_dirs **b, t_dirs **tmp, t_flags f
       }
     }
   }
+  else if (flags & FILE_SIZE_SORT)
+    comparison = (*a)->self->size <= (*b)->self->size;
   move_dir(tmp, comparison ? a : b);
 }
 
