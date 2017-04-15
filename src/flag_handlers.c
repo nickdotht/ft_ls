@@ -101,6 +101,8 @@ void set_flag(char *arg, t_flags *flags) {
       *flags |= DISPLAY_UID_AND_GID;
     else if (arg[i] == 'A')
       *flags |= HIDE_CURR_AND_PREV_DIRS;
+    else if (arg[i] == 'G')
+      *flags |= COLORED_OUTPUT;
     else if (arg[i] == 'U' || arg[i] == 't' || arg[i] == 'u' || arg[i] == 'c' || arg[i] == 'S')
       sort_flag_handler(flags, arg[i]);
     else if (arg[i] == '1' || arg[i] == 'l' || arg[i] == 'C' || arg[i] == 'g')

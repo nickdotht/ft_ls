@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/14 07:16:58 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/15 04:40:34 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,20 @@
 #define IS_NOTDIR 2
 #define IS_DIR 4
 #define IS_LINK 8
+#define IS_UNREADABLE 16
 
 #define ISUSR 1
 #define ISGRP 2
 #define ISOTH 4
+
+#define ANSI_COLOR_RED        "\x1b[31m"
+#define ANSI_COLOR_GREEN      "\x1b[32m"
+#define ANSI_COLOR_BOLD_GREEN "\x1b[32;1m"
+#define ANSI_COLOR_YELLOW     "\x1b[33m"
+#define ANSI_COLOR_BLUE       "\x1b[34m"
+#define ANSI_COLOR_MAGENTA    "\x1b[35m"
+#define ANSI_COLOR_BOLD_CYAN  "\x1b[96;1m"
+#define ANSI_COLOR_RESET      "\x1b[0m"
 
 #define IS_NONPRINTABLE(c) (c <= ' ' && c >= '~')
 
@@ -71,20 +81,21 @@ typedef struct s_format {
 } t_format;
 
 typedef enum e_flags {
-  LONG_LISTING_FLAG = 1,
-  RECURSIVE_FLAG = 2,
-  ALL_FLAG = 4,
-  REVERSE_FLAG = 8,
-  MODIFICATION_DATE_SORT = 16,
-  DISPLAY_UID_AND_GID = 32,
-  SUPRESS_OWNER = 64,
-  ONE_ENTRY_PER_LINE = 128,
-  COLUMN_DISPLAY = 256,
-  CREATION_DATE_SORT = 512,
-  LAST_ACCESS_DATE_SORT = 1024,
-  LAST_STATUS_CHANGE_SORT = 2048,
-  HIDE_CURR_AND_PREV_DIRS = 4096,
-  FILE_SIZE_SORT = 8192
+  LONG_LISTING_FLAG = 1, // -l
+  RECURSIVE_FLAG = 2, // -R
+  ALL_FLAG = 4, // -a
+  REVERSE_FLAG = 8, // -r
+  MODIFICATION_DATE_SORT = 16, // -t
+  DISPLAY_UID_AND_GID = 32, // -n
+  SUPRESS_OWNER = 64, // -g
+  ONE_ENTRY_PER_LINE = 128, // -1
+  COLUMN_DISPLAY = 256, // -C
+  CREATION_DATE_SORT = 512, // -U
+  LAST_ACCESS_DATE_SORT = 1024, // -a
+  LAST_STATUS_CHANGE_SORT = 2048, // -c
+  HIDE_CURR_AND_PREV_DIRS = 4096, // -A
+  FILE_SIZE_SORT = 8192, // -S
+  COLORED_OUTPUT = 16384 // -G
 } t_flags;
 
 typedef struct s_date {
@@ -121,8 +132,9 @@ typedef struct s_files {
   char *linked_to;
   int has_nonprintable_chars;
   char *display_name;
+  int status;
   struct s_files *next;
-  struct stat f;
+  struct stat f; // Since I'm passing this I don't need to do stuffs like is_link or is_chr_or_blk
 } t_files;
 
 typedef struct s_dirs {
@@ -142,6 +154,7 @@ typedef struct s_dirs {
   int is_subdir;
   char *display_name;
   int has_chr_or_blk;
+  int has_valid_files;
 } t_dirs;
 
 typedef union u_etarget {

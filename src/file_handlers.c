@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/14 06:47:34 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/15 03:27:15 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,23 @@ void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   MEMCHECK((date->year = ft_strdup(buff)));
 }
 
-char extended_attributes_handler(int is_readable, char *file_path)
+char extended_attributes_handler(char *file_path)
 {
   char res;
   acl_t acl;
   acl_entry_t entry;
 
   res = ' ';
-  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0 && is_readable)
+  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0)
     return ('@');
   acl = acl_get_link_np(file_path, ACL_TYPE_EXTENDED);
-  if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
+  if (!acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
   {
-    return ('+');
     acl_free(acl);
     acl = NULL;
   }
+  if (acl)
+    return ('+');
   return (res);
 }
 
@@ -107,7 +108,10 @@ void file_permission_handler(t_files **curr_file, char *file_path, struct stat f
   (*curr_file)->modes[7] = (f.st_mode & S_IROTH) ? 'r' : '-';
   (*curr_file)->modes[8] = (f.st_mode & S_IWOTH) ? 'w' : '-';
   (*curr_file)->modes[9] = third_permission_mode_handler(f.st_mode, ISOTH);
-  (*curr_file)->modes[10] = extended_attributes_handler(access(file_path, R_OK) == 0, file_path);
+  if ((*curr_file)->modes[1] != '-')
+    (*curr_file)->modes[10] = extended_attributes_handler(file_path);
+  else
+    (*curr_file)->modes[10] = ' ';
 }
 
 void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int format_option, t_flags flags)
@@ -156,8 +160,16 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
 
   dir_name = (*dirs)->name;
   file_path = (*curr_file)->is_dir_info ? (*curr_file)->name : ft_pathjoin(dir_name, (*curr_file)->name);
-  if (lstat(file_path, &(*curr_file)->f) < 0 || !((*curr_file)->modes = ft_strnew(11)))
-    exit(2);
+  if (lstat(file_path, &(*curr_file)->f) < 0)
+  {
+    if (errno == ENOENT)
+      (*curr_file)->status = IS_NONEXISTENT;
+    else if (errno == EACCES)
+      (*curr_file)->status = IS_UNREADABLE;
+    return ;
+  }
+  (*dirs)->has_valid_files = 1;
+  MEMCHECK(((*curr_file)->modes = ft_strnew(11)));
   get_file_info(curr_file, dirs, file_path, format_option, flags);
   if ((flags & LONG_LISTING_FLAG) && !(*curr_file)->is_dir_info)
   {
@@ -171,8 +183,9 @@ void add_file(t_files **curr_file, t_dirs **dirs, t_flags flags, int format_opti
     if (file_name_len > (*dirs)->max_file_len)
       (*dirs)->max_file_len = file_name_len;
   }
-  if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG) && !ft_strequ((*curr_file)->name, "..") && !ft_strequ((*curr_file)->name, "."))
+  if (S_ISDIR((*curr_file)->f.st_mode) && (flags & RECURSIVE_FLAG) && !ft_strequ((*curr_file)->name, "..") && !ft_strequ((*curr_file)->name, ".")) {
     set_dir(ft_pathjoin(dir_name, (*curr_file)->name), &((*dirs)->sub_dirs), (*curr_file)->name, flags);
+  }
 }
 
 // Make this a libft function

@@ -17,13 +17,35 @@ void date_display_handler(t_format format, t_date date, t_flags flags)
     t = date.atv_sec;
   if (flags & LAST_STATUS_CHANGE_SORT)
     t = date.ctv_sec;
-  if (t < (curr_date - six_months) || t > (curr_date + six_months))
+  if (t <= (curr_date - six_months) || t >= (curr_date + six_months))
     printf("%*s ", format.date_year, date.year);
   else
   {
     printf("%*s:", format.date_hour, date.hour);
     printf("%*s ", format.date_minute, date.minute);
   }
+}
+
+void display_file_name(struct stat f, char *name, t_flags flags)
+{
+  if (!(flags & COLORED_OUTPUT))
+    return ((void)printf("%s ", name));
+  if (S_ISDIR(f.st_mode))
+    printf(ANSI_COLOR_BOLD_CYAN "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISLNK(f.st_mode))
+    printf(ANSI_COLOR_MAGENTA "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISSOCK(f.st_mode))
+    printf(ANSI_COLOR_YELLOW "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISFIFO(f.st_mode))
+    printf(ANSI_COLOR_GREEN "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISBLK(f.st_mode))
+    printf(ANSI_COLOR_BOLD_GREEN "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISCHR(f.st_mode))
+    printf(ANSI_COLOR_BLUE "%s " ANSI_COLOR_RESET, name);
+  else if (S_ISREG(f.st_mode) && f.st_mode & S_IXUSR)
+    printf(ANSI_COLOR_RED "%s " ANSI_COLOR_RESET, name);
+  else
+    printf("%s ", name);
 }
 
 void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_flags flags) {
@@ -48,9 +70,9 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
   printf("%*s ", format.date_day, file->date.day);
   date_display_handler(format, file->date, flags);
   if (file->has_nonprintable_chars)
-    printf("%s", file->display_name);
+    display_file_name(file->f, file->display_name, flags);
   else
-    printf("%s", file->name);
+    display_file_name(file->f, file->name, flags);
   if (file->is_link)
     printf(" -> %s", file->linked_to);
   printf("\n");
@@ -69,6 +91,8 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     term_width = w.ws_col;
     cols = term_width / (max_file_len + 1);
+    if (!cols)
+      cols = 1;
     if ((max_file_len + 1) * file_count < term_width)
       cols = file_count;
     rows = file_count / cols;
@@ -191,7 +215,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
     return (error_handler(FILE_ACCESS_ERR, target));
     free(target.file);
   }
-  if ((flags & LONG_LISTING_FLAG) && dirs->files)
+  if ((flags & LONG_LISTING_FLAG) && dirs->files && dirs->has_valid_files)
     printf("total %d\n", dirs->total_blocks);
   if (flags & COLUMN_DISPLAY)
   {
@@ -201,14 +225,36 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
   }
   while (dirs->files)
   {
-    if (flags & LONG_LISTING_FLAG)
-      long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
-    else
-    {
-      if (dirs->files->has_nonprintable_chars)
-        printf("%s\n", dirs->files->display_name);
+    if (dirs->files->status == IS_NONEXISTENT) {
+      if (dirs->files->has_nonprintable_chars) {
+        MEMCHECK((target.file = ft_strdup(dirs->files->display_name)));
+      }
+      else {
+        MEMCHECK((target.file = ft_strdup(dirs->files->name)));
+      }
+      error_handler(NONEXISTENT_ERR, target);
+      free(target.file);
+    }
+    else if (dirs->files->status == IS_UNREADABLE) {
+      if (dirs->files->has_nonprintable_chars) {
+        MEMCHECK((target.file = ft_strdup(dirs->files->display_name)));
+      }
+      else {
+        MEMCHECK((target.file = ft_strdup(dirs->files->name)));
+      }
+      error_handler(FILE_ACCESS_ERR, target);
+      free(target.file);
+    }
+    else {
+      if (flags & LONG_LISTING_FLAG)
+        long_listing_display(dirs->format, dirs->files, dirs->has_chr_or_blk, flags);
       else
-        printf("%s\n", dirs->files->name);
+      {
+        if (dirs->files->has_nonprintable_chars)
+          printf("%s\n", dirs->files->display_name);
+        else
+          printf("%s\n", dirs->files->name);
+      }
     }
     dirs->files = dirs->files->next;
   }

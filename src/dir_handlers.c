@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/14 07:16:53 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/15 03:26:44 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_fla
   dir->is_unreadable = 0;
   dir->total_blocks = 0;
   dir->file_count = 0;
+  dir->has_valid_files = 0;
   dir->max_file_len = 0;
   return (dir);
 }
