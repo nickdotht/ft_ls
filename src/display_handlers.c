@@ -18,64 +18,67 @@ void date_display_handler(t_format format, t_date date, t_flags flags)
   if (flags & LAST_STATUS_CHANGE_SORT)
     t = date.ctv_sec;
   if (t <= (curr_date - six_months) || t >= (curr_date + six_months))
-    printf("%*s ", format.date_year, date.year);
+    print_handler(1, "%s ", format.date_year, date.year);
   else
   {
-    printf("%*s:", format.date_hour, date.hour);
-    printf("%*s ", format.date_minute, date.minute);
+    print_handler(1, "%s:", format.date_hour, date.hour);
+    print_handler(1, "%s ", format.date_minute, date.minute);
   }
 }
 
 void display_file_name(struct stat f, char *name, t_flags flags)
 {
   if (!(flags & COLORED_OUTPUT))
-    return ((void)printf("%s ", name));
+    return (print_handler(1, "%s", 0, name));
   if (S_ISDIR(f.st_mode))
-    printf(ANSI_COLOR_BOLD_CYAN "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_BOLD_CYAN "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISLNK(f.st_mode))
-    printf(ANSI_COLOR_MAGENTA "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_MAGENTA "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISSOCK(f.st_mode))
-    printf(ANSI_COLOR_YELLOW "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_YELLOW "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISFIFO(f.st_mode))
-    printf(ANSI_COLOR_GREEN "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_GREEN "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISBLK(f.st_mode))
-    printf(ANSI_COLOR_BOLD_GREEN "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_BOLD_GREEN "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISCHR(f.st_mode))
-    printf(ANSI_COLOR_BLUE "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_BLUE "%s" ANSI_COLOR_RESET, 0, name);
   else if (S_ISREG(f.st_mode) && f.st_mode & S_IXUSR)
-    printf(ANSI_COLOR_RED "%s " ANSI_COLOR_RESET, name);
+    print_handler(1, ANSI_COLOR_RED "%s" ANSI_COLOR_RESET, 0, name);
   else
-    printf("%s ", name);
+    print_handler(1, "%s", 0, name);
 }
 
 void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_flags flags) {
-  printf("%s ", file->modes);
-  printf("%*ld ", format.link, file->link);
+  print_handler(1, "%s ", 0, file->modes);
+  print_handler(1, "%ld ", format.link, ft_itoa(file->link));
   if (!(flags & SUPRESS_OWNER))
   {
     if (file->owner && !(flags & DISPLAY_UID_AND_GID))
-      printf("%-*s  ", format.owner, file->owner);
+      lprint_handler(1, "%s  ", format.owner, file->owner);
     else
-      printf("%-*d  ", format.user_id, file->user_id);
+      lprint_handler(1, "%d  ", format.user_id, ft_itoa(file->user_id));
   }
   if (file->group && !(flags & DISPLAY_UID_AND_GID))
-    printf("%-*s  ", format.group, file->group);
+    lprint_handler(1, "%s  ", format.group, file->group);
   else
-    printf("%-*d  ", format.group_id, file->group_id);
+    lprint_handler(1, "%d  ", format.group_id, ft_itoa(file->group_id));
   if (file->is_chr_or_blk)
-    printf(" %*ld, %*ld ", format.major, file->major, format.minor, file->minor);
+  {
+    print_handler(1, " %ld", format.major, ft_itoa(file->major));
+    print_handler(1, "%ld ", format.minor, ft_itoa(file->minor));
+  }
   else
-    printf("%*ld ", has_chr_or_blk ? format.major + format.minor + format.fileSize + 2 : format.fileSize, file->size);
-  printf("%*s ", format.date_month, file->date.month);
-  printf("%*s ", format.date_day, file->date.day);
+    print_handler(1, "%ld ", has_chr_or_blk ? format.major + format.minor + format.fileSize + 2 : format.fileSize, ft_itoa(file->size));
+  print_handler(1, "%s ", format.date_month, file->date.month);
+  print_handler(1, "%s ", format.date_day, file->date.day);
   date_display_handler(format, file->date, flags);
   if (file->has_nonprintable_chars)
     display_file_name(file->f, file->display_name, flags);
   else
     display_file_name(file->f, file->name, flags);
   if (file->is_link)
-    printf(" -> %s", file->linked_to);
-  printf("\n");
+    print_handler(1, " -> %s", 0, file->linked_to);
+  print_handler(1, "\n", 0, NULL);
 }
 
 void column_display(t_entries entries, int file_count, int max_file_len, int target)
@@ -120,12 +123,12 @@ void column_display(t_entries entries, int file_count, int max_file_len, int tar
       pos = i;
       while (++j < cols)
       {
-        printf("%-*s ", max_file_len, target == IS_DIR ? arr[pos] : entries.file_names[pos]);
+        lprint_handler(1, "%s ", max_file_len, target == IS_DIR ? arr[pos] : entries.file_names[pos]);
         pos += rows;
         if (pos >= file_count)
           break;
       }
-      printf("\n");
+      print_handler(1, "\n", 0, NULL);
     }
     if (target == IS_DIR)
       free(arr);
@@ -170,7 +173,7 @@ void nondir_column_display(t_dirs *dirs, int should_separate)
     column_display(entries, file_count, max_file_len, IS_NOTDIR);
   free(entries.file_names);
   if (file_count && should_separate)
-    printf("\n");
+    print_handler(1, "\n", 0, NULL);
 }
 
 void nondir_display(t_dirs *dirs, t_flags flags) {
@@ -192,12 +195,12 @@ void nondir_display(t_dirs *dirs, t_flags flags) {
       else
       {
         if (tmp->self->has_nonprintable_chars)
-          printf("%s\n", tmp->self->display_name);
+          print_handler(1, "%s\n", 0, tmp->self->display_name);
         else
-          printf("%s\n", tmp->self->name);
+          print_handler(1, "%s\n", 0, tmp->self->name);
       }
       if (is_last_nondir(tmp) && should_separate)
-        printf("\n");
+        print_handler(1, "\n", 0, NULL);
     }
     tmp = tmp->next;
   }
@@ -208,7 +211,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
   t_etarget target;
 
   if (head->next)
-      printf("%s:\n", dirs->name);
+      print_handler(1, "%s:\n", 0, dirs->name);
   if (dirs->is_unreadable)
   {
     MEMCHECK((target.file = ft_strdup(dirs->display_name)));
@@ -216,7 +219,7 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
     free(target.file);
   }
   if ((flags & LONG_LISTING_FLAG) && dirs->files && dirs->has_valid_files)
-    printf("total %d\n", dirs->total_blocks);
+    print_handler(1, "total %d\n", 0, ft_itoa(dirs->total_blocks));
   if (flags & COLUMN_DISPLAY)
   {
     entries.files = dirs->files;
@@ -251,9 +254,9 @@ void dir_display(t_dirs *head, t_dirs *dirs, t_flags flags) {
       else
       {
         if (dirs->files->has_nonprintable_chars)
-          printf("%s\n", dirs->files->display_name);
+          print_handler(1, "%s\n", 0, dirs->files->display_name);
         else
-          printf("%s\n", dirs->files->name);
+          print_handler(1, "%s\n", 0, dirs->files->name);
       }
     }
     dirs->files = dirs->files->next;
@@ -302,7 +305,7 @@ void ft_display(t_dirs *dirs, t_flags flags)
       display_handler(dirs, tmp, flags, IS_DIR);
       tmp->next = subdir_handler(tmp->next, &(tmp->sub_dirs), flags);
       if (!is_last_dir(tmp))
-        printf("\n");
+        print_handler(1, "\n", 0, NULL);
     }
     tmp = tmp->next;
   }

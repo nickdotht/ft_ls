@@ -3,13 +3,13 @@
 void        error_handler(int err, t_etarget target)
 {
     if (err == FLAG_ERR) {
-        fprintf(stderr, "ls: illegal option -- %c\n", target.flag);
-        fprintf(stderr, "usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]\n");
-        fprintf(stderr, "Try 'ls --help' for more information.\n");
+        print_handler(2, "ls: illegal option -- %c\n", 0, &target.flag);
+        print_handler(2, "usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]\n", 0, NULL);
+        print_handler(2, "Try 'ls --help' for more information.\n", 0, NULL);
         exit(1);
     }
     else if (err == NONEXISTENT_ERR)
-        fprintf(stderr, "ls: %s: No such file or directory\n", target.file);
+        print_handler(2, "ls: %s: No such file or directory\n", 0, target.file);
     else
-        fprintf(stderr, "ls: %s: Permission denied\n", target.file);
+        print_handler(2, "ls: %s: Permission denied\n", 0, target.file);
 }

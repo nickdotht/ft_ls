@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/15 04:40:34 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/16 01:33:27 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@
 #include <errno.h>
 #include <grp.h>
 #include <pwd.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -193,4 +192,6 @@ char get_file_entry_type(int mode);
 char third_permission_mode_handler(int mode, int userType);
 char **argument_handler(int ac, char **av);
 t_format get_nondir_format(t_dirs **dirs, t_flags flags);
+void print_handler(int fd, char *str, int format, char *target);
+void lprint_handler(int fd, char *str, int format, char *target);
 #endif
