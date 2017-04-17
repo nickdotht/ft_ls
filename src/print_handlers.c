@@ -3,6 +3,7 @@
 void print_handler(int fd, char *str, int format, char *target)
 {
     char *new;
+    char *tmp;
 
     if (!format && !target)
         return (ft_putstr_fd(str, fd));
@@ -13,16 +14,21 @@ void print_handler(int fd, char *str, int format, char *target)
     {
         if (str[i] == '%')
         {
-            while (len++ < format)
+            while (len++ < format) {
+                tmp = new;
                 new = ft_strjoinch(new, ' ');
-            new = ft_strjoin(new, target);
-            if (str[i + 1] == 'd' || str[i + 1] == 's')
-                i++;
-            else
-                i += 2;
+                free(tmp);
+            }
+            tmp = new;
+            MEMCHECK((new = ft_strjoin(new, target)));
+            free(tmp);
+            i += (str[i + 1] == 'd' || str[i + 1] == 's') ? 1 : 2;
         }
-        else
-            new = ft_strjoinch(new, str[i]);
+        else {
+            tmp = new;
+            MEMCHECK((new = ft_strjoinch(new, str[i])));
+            free(tmp);
+        }
     }
     ft_putstr_fd(new, fd);
     free(new);
@@ -50,10 +56,7 @@ void lprint_handler(int fd, char *str, int format, char *target)
                 new = ft_strjoinch(new, ' ');
                 free(tmp);
             }
-            if (str[i + 1] == 'd' || str[i + 1] == 's')
-                i++;
-            else
-                i += 2;
+            i += (str[i + 1] == 'd' || str[i + 1] == 's') ? 1 : 2;
         }
         else {
             tmp = new;

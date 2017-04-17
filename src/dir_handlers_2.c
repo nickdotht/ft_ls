@@ -1,4 +1,5 @@
 #include "ft_ls.h"
+#include <stdio.h>
 
 void move_dir(t_dirs **destRef, t_dirs **sourceRef)
 {

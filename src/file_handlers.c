@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/16 01:02:52 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/17 04:42:54 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ char extended_attributes_handler(char *file_path)
 
   res = ' ';
   if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0)
-    return ('@');
+    res = '@';
   acl = acl_get_link_np(file_path, ACL_TYPE_EXTENDED);
   if (!acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
   {
@@ -59,7 +59,7 @@ char extended_attributes_handler(char *file_path)
     acl = NULL;
   }
   if (acl)
-    return ('+');
+    res = '+';
   return (res);
 }
 
