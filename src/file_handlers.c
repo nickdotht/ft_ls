@@ -16,13 +16,13 @@ void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   char buff[200];
   unsigned long long t;
 
-  date->mtv_sec = (unsigned long long)f.st_mtime;
+  date->mtv_sec = (unsigned long long)f.st_mtimespec.tv_sec;
   date->mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
-  date->atv_sec = (unsigned long long)f.st_atime;
+  date->atv_sec = (unsigned long long)f.st_atimespec.tv_sec;
   date->atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
-  date->ctv_sec = (unsigned long long)f.st_ctime;
+  date->ctv_sec = (unsigned long long)f.st_ctimespec.tv_sec;
   date->ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
-  date->birthtv_sec = (unsigned long long)f.st_birthtime;
+  date->birthtv_sec = (unsigned long long)f.st_birthtimespec.tv_sec;
   date->birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
   t = date->mtv_sec;
   if (flags & CREATION_DATE_SORT)
@@ -142,7 +142,7 @@ void get_file_info(t_files **curr_file, t_dirs **dirs, char *file_path, int form
     if ((link_len = readlink(file_path, buff, 256)) == -1)
       exit(2);
     if (has_nonprintable_chars(buff, link_len)) {
-      MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff, link_len)));      
+      MEMCHECK(((*curr_file)->linked_to = serialize_file_name(buff, link_len)));
     }
     else {
       MEMCHECK(((*curr_file)->linked_to = ft_strndup(buff, link_len)));

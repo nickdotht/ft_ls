@@ -35,13 +35,13 @@ t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_fla
   {
     // Check if this passed
     lstat(dir->name, &f);
-    dir->date.mtv_sec = (unsigned long long)f.st_mtime;
+    dir->date.mtv_sec = (unsigned long long)f.st_mtimespec.tv_sec;
     dir->date.mtv_nsec = (unsigned long long)f.st_mtimespec.tv_nsec;
-    dir->date.atv_sec = (unsigned long long)f.st_atime;
+    dir->date.atv_sec = (unsigned long long)f.st_atimespec.tv_sec;
     dir->date.atv_nsec = (unsigned long long)f.st_atimespec.tv_nsec;
-    dir->date.ctv_sec = (unsigned long long)f.st_ctime;
+    dir->date.ctv_sec = (unsigned long long)f.st_ctimespec.tv_sec;
     dir->date.ctv_nsec = (unsigned long long)f.st_ctimespec.tv_nsec;
-    dir->date.birthtv_sec = (unsigned long long)f.st_birthtime;
+    dir->date.birthtv_sec = (unsigned long long)f.st_birthtimespec.tv_sec;
     dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
     MEMCHECK((dir->self->display_name = ft_strdup(path)));
   }
