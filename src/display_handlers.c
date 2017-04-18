@@ -64,7 +64,7 @@ void long_listing_display(t_format format, t_files *file, int has_chr_or_blk, t_
     lprint_handler(1, "%d  ", format.group_id, ft_itoa(file->group_id));
   if (file->is_chr_or_blk)
   {
-    print_handler(1, " %ld", format.major, ft_itoa(file->major));
+    print_handler(1, " %ld, ", format.major, ft_itoa(file->major));
     print_handler(1, "%ld ", format.minor, ft_itoa(file->minor));
   }
   else

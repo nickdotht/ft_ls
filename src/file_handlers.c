@@ -6,11 +6,12 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:40:08 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/17 04:42:54 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/18 04:29:44 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#include <stdio.h>
 
 void file_date_handler(t_date *date, struct stat f, t_flags flags) {
   char buff[200];
@@ -50,8 +51,13 @@ char extended_attributes_handler(char *file_path)
   acl_entry_t entry;
 
   res = ' ';
-  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) != 0)
-    res = '@';
+  if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) == -1)
+  {
+    if (errno == EPERM || errno == EACCES || errno == EFAULT)
+      return (' ');
+  }
+  else if (listxattr(file_path, NULL, 0, XATTR_NOFOLLOW) > 0)
+    return ('@');
   acl = acl_get_link_np(file_path, ACL_TYPE_EXTENDED);
   if (!acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &entry) == -1)
   {

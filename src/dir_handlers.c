@@ -6,11 +6,12 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/15 03:26:44 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/18 13:37:50 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
 
 t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_flags flags)
 {
@@ -31,7 +32,7 @@ t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_fla
     if (dr)
       closedir(dr);
   }
-  if (status == IS_DIR)
+  if (status != IS_NONEXISTENT)
   {
     // Check if this passed
     lstat(dir->name, &f);
@@ -44,9 +45,6 @@ t_dirs *new_dir(char *path, int status, int is_default, char *subdir_name, t_fla
     dir->date.birthtv_sec = (unsigned long long)f.st_birthtimespec.tv_sec;
     dir->date.birthtv_nsec = (unsigned long long)f.st_birthtimespec.tv_nsec;
     MEMCHECK((dir->self->display_name = ft_strdup(path)));
-  }
-  if (status != IS_NONEXISTENT)
-  {
     dir->self->is_dir_info = 1;
     if (subdir_name)
       MEMCHECK((dir->display_name = ft_strdup(subdir_name)));
