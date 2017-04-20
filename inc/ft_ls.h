@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 22:33:37 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/20 02:17:56 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,14 @@
 # define INIT_FORMAT 1
 # define UPDATE_FORMAT 2
 # define IDLE_FORMAT 4
+
+typedef struct			s_norm
+{
+	void				*d1;
+	void				*d2;
+	void				*d3;
+	void				*d4;
+}						t_norm;
 
 typedef struct			s_format
 {
@@ -234,4 +242,11 @@ void					long_listing_display(t_format format, t_files *file,
 	int has_chr_or_blk);
 void					column_display(t_entries entries, int file_count,
 	int max_file_len, int target);
+void					nondir_column_display_2(t_dirs *dirs, t_entries *entries);
+void					nondir_column_display(t_dirs *dirs, int should_separate);
+void					nondir_display_2(t_dirs *tmp, t_format nondir_format,
+	int should_separate);
+void					nondir_display(t_dirs *dirs, int should_separate);
+int						dir_display_2(t_dirs *head, t_dirs *dirs);
+void					dir_display_4(t_dirs *dirs);
 #endif
