@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dir_handlers.c                                     :+:      :+:    :+:   */
+/*   dir_handlers_1.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 13:32:37 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 04:07:35 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/19 17:16:04 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ t_dirs		*dir_handler(char **args)
 		set_dir(args[i], &dirs, NULL);
 	}
 	if (g_flags & FILE_SIZE_SORT)
-		file_size_sort(&dirs);
+		add_file_info(&dirs);
 	dir_sort(&dirs);
 	return (dirs);
 }

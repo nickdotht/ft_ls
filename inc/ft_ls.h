@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/24 15:32:06 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 07:55:50 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/19 22:33:37 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ typedef struct			s_files
 	char				*display_name;
 	int					status;
 	struct s_files		*next;
-	struct stat			f; // Since I'm passing this I don't need to do stuffs like is_link or is_chr_or_blk
+	struct stat			f;
 }						t_files;
 
 typedef struct			s_dirs
@@ -212,6 +212,26 @@ int						last_status_change_sort(char *n1, char *n2, t_date d1,
 void					get_dir_date(t_dirs **dir, struct stat f);
 void					initialize_dir(t_dirs **dir, int status, char *path,
 	char *subdir_name);
-void					file_size_sort(t_dirs **dirs);
+void					add_file_info(t_dirs **dirs);
 void					date_initializer(t_date *date, struct stat f);
+void					file_date_handler(t_date *date, struct stat f);
+char					extended_attributes_handler(char *file_path);
+char					*serialize_name(char *name, int len);
+int						has_nonprintable_chars(char *s, int len);
+void					file_permission_handler(t_files **curr_file,
+	char *file_path, struct stat f);
+void					get_link_file(t_files **curr_file, char *file_path);
+void					get_file_info(t_files **curr_file, t_dirs **dirs,
+	char *file_path, int format_option);
+void					long_option_flag(char *option);
+void					display_flag_handler_2(char f);
+void					display_flag_handler(char f);
+void					date_display_handler(t_format format, t_date date);
+void					display_file_name(struct stat f, char *name);
+void					long_listing_display_2(t_format format, t_files *file,
+	int has_chr_or_blk);
+void					long_listing_display(t_format format, t_files *file,
+	int has_chr_or_blk);
+void					column_display(t_entries entries, int file_count,
+	int max_file_len, int target);
 #endif

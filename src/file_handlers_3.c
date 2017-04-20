@@ -6,7 +6,7 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 07:17:52 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 07:21:17 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/19 17:53:19 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,17 @@ char	third_permission_mode_handler(int mode, int user_type)
 			else
 				return ('-');
 		}
+	}
+}
+
+void	add_file_info(t_dirs **dirs)
+{
+	t_dirs *tmp;
+
+	tmp = *dirs;
+	while (tmp)
+	{
+		add_file(&tmp->self, &tmp, IDLE_FORMAT);
+		tmp = tmp->next;
 	}
 }
