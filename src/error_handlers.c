@@ -6,17 +6,26 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 07:07:17 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 23:46:33 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/19 23:57:48 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#include <stdio.h>
 
 void	error_handler(int err, t_etarget target)
 {
+	char *tmp;
+	char *flag;
+
 	if (err == FLAG_ERR)
 	{
-		print_handler(2, "ls: illegal option -- %s\n", 0, &target.flag);
+		flag = ft_strnew(1);
+		tmp = flag;
+		flag = ft_strjoinch(flag, target.flag);
+		free(tmp);
+		print_handler(2, "ls: illegal option -- %s\n", 0, flag);
+		free(flag);
 		print_handler(2,
 			"usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]\n",
 			0, NULL);
