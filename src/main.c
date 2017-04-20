@@ -6,11 +6,11 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/12/14 17:33:27 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/19 18:17:13 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/19 23:49:28 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ft_ls.h>
+#include "ft_ls.h"
 
 int	main(int ac, char **av)
 {
