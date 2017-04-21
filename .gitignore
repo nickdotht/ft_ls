@@ -5,6 +5,6 @@ ft_ls.dSYM/
 */*.a
 test*
 .nfs.*
-*DS_Store
+.*DS_Store
 build
 *.json
