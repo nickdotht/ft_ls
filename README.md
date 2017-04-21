@@ -21,10 +21,10 @@ It's pretty simple, instead of calling `ls`, call `./ft_ls` from the root direct
 
 #### Supported flags
 
-- Long listing flag: -l
-- Recursive flag: -R
-- All flag: -a
-- Reverse flag: -r
+- Long listing display: -l
+- Display recursively: -R
+- Display all files: -a
+- Reverse sort: -r
 - Sort by modification date: -t
 - Display user ID and group ID: -n
 - Suppress owner: -g
@@ -43,9 +43,9 @@ It's pretty simple, instead of calling `ls`, call `./ft_ls` from the root direct
 - The `master` branch has the original code, the `norme` branch has the normed version of it.
 - No need to mention the odd spacing in files, I'm using a tab size of 4.
 - It's not fast and there are a lot of memory leaks, I'll come back and fix those later.
-- There are probably better ways to implement it, but we are limited by a set of functions at my school (just to make it harder and give us a deeper understanding of what's happening in the back), please, review the [project instructions][2] before you explain how `X` or `Y` would have been a better way to do it ;)
+- I know comments would have been super useful, this is kind of a big code base, but I'm trying to go fast in my school program, I'll make sure to add them later.
+- There are probably better ways to implement it, but we are limited by a set of functions at my school (just to make it harder and give us a deeper understanding of what's happening in the back), please, review the [project instructions][1] before you explain how `X` or `Y` would have been a better way to do it ;)
 
 Enjoy!
 
-[1]: linkylinky
-[2]: linkylinky
+[1]: https://github.com/R4meau/ft_ls/blob/master/ft_ls.en.pdf
