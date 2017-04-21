@@ -6,59 +6,11 @@
 /*   By: jrameau <jrameau@student.42.us.org>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/04/19 22:30:10 by jrameau           #+#    #+#             */
-/*   Updated: 2017/04/20 02:52:24 by jrameau          ###   ########.fr       */
+/*   Updated: 2017/04/20 21:06:50 by jrameau          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-void	date_display_handler(t_format format, t_date date)
-{
-	struct timeval		tp;
-	unsigned long long	curr_date;
-	unsigned long long	six_months;
-	unsigned long long	t;
-
-	gettimeofday(&tp, NULL);
-	curr_date = (unsigned long long)tp.tv_sec;
-	six_months = 15778476;
-	t = date.mtv_sec;
-	if (g_flags & CREATION_DATE_SORT)
-		t = date.birthtv_sec;
-	if (g_flags & LAST_ACCESS_DATE_SORT)
-		t = date.atv_sec;
-	if (g_flags & LAST_STATUS_CHANGE_SORT)
-		t = date.ctv_sec;
-	if (t <= (curr_date - six_months) || t >= (curr_date + six_months))
-		print_handler(1, "%s ", format.date_year, date.year);
-	else
-	{
-		print_handler(1, "%s:", format.date_hour, date.hour);
-		print_handler(1, "%s ", format.date_minute, date.minute);
-	}
-}
-
-void	display_file_name(struct stat f, char *name)
-{
-	if (!(g_flags & COLORED_OUTPUT))
-		return (print_handler(1, "%s", 0, name));
-	if (S_ISDIR(f.st_mode))
-		print_handler(1, ANSI_COLOR_BOLD_CYAN "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISLNK(f.st_mode))
-		print_handler(1, ANSI_COLOR_MAGENTA "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISSOCK(f.st_mode))
-		print_handler(1, ANSI_COLOR_YELLOW "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISFIFO(f.st_mode))
-		print_handler(1, ANSI_COLOR_GREEN "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISBLK(f.st_mode))
-		print_handler(1, ANSI_COLOR_BOLD_GREEN "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISCHR(f.st_mode))
-		print_handler(1, ANSI_COLOR_BLUE "%s" ANSI_COLOR_RESET, 0, name);
-	else if (S_ISREG(f.st_mode) && f.st_mode & S_IXUSR)
-		print_handler(1, ANSI_COLOR_RED "%s" ANSI_COLOR_RESET, 0, name);
-	else
-		print_handler(1, "%s", 0, name);
-}
 
 void	long_listing_display_2(t_format format, t_files *file,
 	int has_chr_or_blk)
@@ -112,28 +64,60 @@ void	long_listing_display(t_format format, t_files *file,
 	long_listing_display_2(format, file, has_chr_or_blk);
 }
 
+int		*get_rows_cols(int max_file_len, int file_count)
+{
+	struct winsize	w;
+	int				*rows_cols;
+	int				term_width;
+
+	rows_cols = (int *)ft_memalloc(sizeof(int) * 2);
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+	term_width = w.ws_col;
+	rows_cols[1] = term_width / (max_file_len + 1);
+	if (!rows_cols[1])
+		rows_cols[1] = 1;
+	if ((max_file_len + 1) * file_count < term_width)
+		rows_cols[1] = file_count;
+	rows_cols[0] = file_count / rows_cols[1];
+	if (file_count % rows_cols[1])
+		++rows_cols[0];
+	return (rows_cols);
+}
+
+void	print_columns(t_entries entries, int *data, char **arr, int target)
+{
+	int		i;
+	int		j;
+	int		pos;
+	int		*rows_cols;
+
+	rows_cols = get_rows_cols(data[1], data[0]);
+	pos = 0;
+	i = -1;
+	while (++i < rows_cols[0])
+	{
+		j = -1;
+		pos = i;
+		while (++j < rows_cols[1])
+		{
+			lprint_handler(1, "%s ", data[1], target == IS_DIR ?
+				arr[pos] :
+				entries.file_names[pos]);
+			pos += rows_cols[0];
+			if (pos >= data[0])
+				break ;
+		}
+		print_handler(1, "\n", 0, NULL);
+	}
+}
+
 void	column_display(t_entries entries, int file_count,
 	int max_file_len, int target)
 {
-	struct winsize	w;
-	int				cols;
-	int				rows;
-	char			**arr;
-	int				term_width;
-	int				i;
-	int				pos;
-	int				j;
+	int		i;
+	char	**arr;
+	int		*data;
 
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	term_width = w.ws_col;
-	cols = term_width / (max_file_len + 1);
-	if (!cols)
-		cols = 1;
-	if ((max_file_len + 1) * file_count < term_width)
-		cols = file_count;
-	rows = file_count / cols;
-	if (file_count % cols)
-		++rows;
 	arr = NULL;
 	if (target == IS_DIR)
 	{
@@ -149,23 +133,10 @@ void	column_display(t_entries entries, int file_count,
 			entries.files = entries.files->next;
 		}
 	}
-	pos = 0;
-	i = -1;
-	while (++i < rows)
-	{
-		j = -1;
-		pos = i;
-		while (++j < cols)
-		{
-			lprint_handler(1, "%s ", max_file_len, target == IS_DIR ?
-				arr[pos] :
-				entries.file_names[pos]);
-			pos += rows;
-			if (pos >= file_count)
-				break ;
-		}
-		print_handler(1, "\n", 0, NULL);
-	}
+	data = (int *)ft_memalloc(sizeof(int) * 2);
+	data[0] = file_count;
+	data[1] = max_file_len;
+	print_columns(entries, data, arr, target);
 	if (target == IS_DIR)
 		free(arr);
 }
